@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+    <title>Priorities</title>
+    <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <script src="~/Scripts/modernizr-2.6.2.js"></script>
+    <style>
+
+    </style>
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                              
+                <table>
+                    <tr>
+                        @if(User.Identity.IsAuthenticated)
+                        {
+                            <th>@Html.ActionLink("Show my items", "ShowUserItems", "ItemsPriority", new { area = "" }, new { @class = "navbar-brand" })</th>
+                            <th>@Html.ActionLink("Show old items", "ShowOldUserItems", "ItemsPriority", new { area = "" }, new { @class = "navbar-brand" })</th>                           
+                            if(User.IsInRole("Administrator"))
+                            {
+                                <th>@Html.ActionLink("Show all items", "ShowAllItems", "ItemsPriority", new { area = "" }, new { @class = "navbar-brand" })</th>
+                                <th>@Html.ActionLink("Show all old items", "ShowAllOldItems", "ItemsPriority", new { area = "" }, new { @class = "navbar-brand" })</th>
+                            }
+                            <th>@Html.ActionLink("Change password", "ChangePassword", "Auth", new { area = "" }, new { @class = "navbar-brand" })</th>
+                            <th>@Html.ActionLink("Delete account", "DeleteUser", "Auth", new { area = "" }, new { @class = "navbar-brand" })</th>
+                            <th>@Html.ActionLink("Log out", "LogOut", "Auth", new { area = "" }, new { @class = "navbar-brand" })</th>
+                            <th><div style="font-size: large" class="text-danger">@User.Identity.Name</div></th>
+                        }
+                        else
+                        {
+                            <th>@Html.ActionLink("Log in", "LogIn", "Auth", new { area = "" }, new { @class = "navbar-brand" })</th>
+                            <th>@Html.ActionLink("Register", "Register", "Auth", new { area = "" }, new { @class = "navbar-brand" })</th>
+                        }
+                    </tr>
+                </table>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            
+        </footer>
+    </div>
+      
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+</body>
+</html>

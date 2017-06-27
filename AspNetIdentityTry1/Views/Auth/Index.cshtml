@@ -1,0 +1,20 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Auth / Index</h2>
+
+@if (TempData["Notification"] != null)
+{ 
+    <p>
+        Value in ViewBag: @TempData["Notification"]
+    </p>
+}
+else
+{ 
+    <p>
+        Nothing in ViewBag
+    </p>
+}
+

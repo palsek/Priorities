@@ -1,0 +1,19 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Home / Index</h2>
+
+@if (TempData["Notification"] != null)
+{ 
+    <p>
+        Notification from TempData: @TempData["Notification"]
+    </p>
+}
+else
+{
+    <p>
+        Nothing in ViewBag        
+    </p>
+}
