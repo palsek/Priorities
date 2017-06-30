@@ -7,6 +7,10 @@
     <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <script src="~/Scripts/modernizr-2.6.2.js"></script>
+
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+
     <style>
 
     </style>
@@ -60,7 +64,26 @@
         </footer>
     </div>
       
-    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
-    <script src="~/Scripts/bootstrap.min.js"></script>
+
+    
+    @*<script>
+    console.log("Cos tam");
+
+    $(document).ready(function () {
+        console.log("Document Ready");
+        $("#ItemsPerPage").change(function () {
+            console.log("Zmiana wyboru w select item");
+
+            var selection = $("#ItemsPerPage").val();
+            x = $("#ItemsPerPage").val();
+
+            console.log("selection: " + selection);
+            console.log("x: " + x);
+        });
+    });
+    </script>*@
+
+
+        
 </body>
 </html>

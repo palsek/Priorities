@@ -22,21 +22,55 @@
             });
         }
     }
+
+    List<SelectListItem> numersPerPage = new List<SelectListItem>();
+    numersPerPage.Add(new SelectListItem
+    {
+        Text = "5",
+        Value = "5"
+    });
+    numersPerPage.Add(new SelectListItem
+    {
+        Text = "10",
+        Value = "10"
+    });
+    numersPerPage.Add(new SelectListItem
+    {
+        Text = "20",
+        Value = "20"
+    });
+    numersPerPage.Add(new SelectListItem
+    {
+        Text = "50",
+        Value = "50"
+    });
+    numersPerPage.Add(new SelectListItem
+    {
+        Text = "100",
+        Value = "100"
+    });
 }
 
 <h2>All Old Items:</h2>
 
 <div style="float: right">
-    @using (Html.BeginForm("ShowAllOldItems", "ItemsPriority", FormMethod.Get))
+    @*@using (Html.BeginForm("ShowAllOldItems", "ItemsPriority", FormMethod.Get))
     {
         <p style="float: right">
             <input type="submit" value="Show" class="btn btn-default" />
         </p>
+        <p>@Html.DropDownList("userName", userList)</p>        
+    }*@
 
-        <p>@Html.DropDownList("userName", userList)</p>
+    <div>
+        <form action="/ItemsPriority/ShowAllOldItems" method="get">
+            Number per page:
+            @Html.DropDownList("numberPerPage", numersPerPage)
+            @Html.DropDownList("userName", userList)
+            <input type="submit" value="Apply" class="btn btn-default" />
+        </form>
+    </div>
 
-    
-    }
 </div>
 
 <p>
@@ -93,3 +127,18 @@
 }
 
 </table>
+
+<!-- CHANGES ADDED TO SUPPORT PAGINATION -->
+<div style="font-size: 25px">
+    Page:
+
+    @for (int i = 1; i <= ViewBag.AllPageNumber; i++)
+    {
+        string sPage = i.ToString();
+
+        @Html.ActionLink(sPage + " ", "ShowAllOldItems", new { page = i, numberPerPage = @ViewBag.NumberPerPage, userName = @ViewBag.UserName } );
+
+    }
+</div>
+
+
