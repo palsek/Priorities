@@ -43,6 +43,7 @@ namespace AspNetIdentityTry1.Controllers
                 
         [HttpPost]
         [AllowAnonymous]
+        [ValidateAntiForgeryToken]
         public ActionResult Register(RegisterModel model)
         {
             if (!ModelState.IsValid)

@@ -48,6 +48,7 @@ namespace AspNetIdentityTry1.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult CreateNewItem(Item item)
         {
             item.UserName = User.Identity.Name;
@@ -80,6 +81,7 @@ namespace AspNetIdentityTry1.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Administrator")]
+        [ValidateAntiForgeryToken]
         public ActionResult CreateItemForUser(Item item2add)
         {
             item2add.Created = DateTime.Now;
@@ -282,77 +284,11 @@ namespace AspNetIdentityTry1.Controllers
             {
                 return new HttpNotFoundResult("Not found");
             }
-
-            //--------------------------------------------------------------------------------------------------------
-
-            //-------------------------------------- Calculate items on page ----------------------------------------------
-                        
-           /* int itemsToSkip = (numberPerPage * page) - numberPerPage;
-
-            if (itemsToSkip <= allItemsNumber)
-            {
-                List<Item> currentItems;
-
-                var queryToItems = itemsDbContext.Items
-                                                        .Where(i => i.UserName == userName && (i.Status == Status.New || i.Status == Status.InProgress))
-                                                        .OrderByDescending(i => i.Priority)
-                                                        .ThenBy(i => i.Created);
-
-                if (itemsToSkip + numberPerPage > allItemsNumber)  // For page which is NOT full of items per page (the last page)
-                {
-                    int itemsPerLastPage = numberPerPage - (itemsToSkip + numberPerPage - allItemsNumber);
-
-                    currentItems = queryToItems.ToList().GetRange(itemsToSkip, itemsPerLastPage);
-                }
-                else // For page which IS full of items per page
-                {                    
-                    currentItems = queryToItems.ToList().GetRange(itemsToSkip, numberPerPage);
-                }
-
-                if (currentItems != null)
-                {
-                    return View(currentItems);
-                }
-                else
-                {
-                    return View();
-                }
-
-            }
-            else
-            {
-                Debug.WriteLine("--------------OUT OF RANGE PAGE--------------------");
-
-                return new HttpNotFoundResult("Not found");
-            }
-            */
-            //-------------------------------------------------------------------------------------------------------------
-
-            
         }
 
         [HttpGet]
         public ActionResult ShowOldUserItems(int page = 1, int numberPerPage = 20)
-        {
-            //OLD APPROACH
-           /* string userName = User.Identity.Name;            
-
-            List<Item> userItems = itemsDbContext.Items
-                                                    .Where(i => i.UserName == userName && i.Status == Status.Done)
-                                                    .OrderByDescending(i => i.Priority)
-                                                    .ThenBy(i => i.Created)
-                                                    .ToList();
-
-            if (userItems != null)
-            {
-                return View("ShowUserItems", userItems);
-            }
-            else
-            {
-                return View();
-            }*/
-
-            // NEW APPROACH
+        {           
             string userName = User.Identity.Name;
 
             ViewBag.NumberPerPage = numberPerPage;
@@ -385,32 +321,7 @@ namespace AspNetIdentityTry1.Controllers
         [HttpGet]
         [Authorize(Roles = "Administrator")]
         public ActionResult ShowAllItems(string userName = "", int page = 1, int numberPerPage = 20)
-        {
-            /*
-
-            if (userName == "" || userName == "All")
-            {
-                List<Item> allItems = itemsDbContext.Items
-                    .Where(i => i.Status == Status.New || i.Status == Status.InProgress)
-                    .OrderByDescending(i => i.Priority)
-                    .ToList();
-
-                return View(allItems);
-            }
-            else
-            {
-                List<Item> allItems = itemsDbContext.Items
-                    .Where(i => (i.Status == Status.New || i.Status == Status.InProgress) && i.UserName == userName)
-                    .OrderByDescending(i => i.Priority)
-                    .ToList();
-
-                return View(allItems);
-            }*/
-
-            // NEW APPROACH
-
-            //string userName = User.Identity.Name;
-
+        {           
             ViewBag.allUsersName = allUserNames;
             ViewBag.UserName = userName;
 
@@ -457,28 +368,6 @@ namespace AspNetIdentityTry1.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult ShowAllOldItems(string userName = "", int page = 1, int numberPerPage = 20)
         {
-            /*ViewBag.allUsersName = allUserNames;
-
-            if (userName == "" || userName == "All")
-            {
-                List<Item> allOldItems = itemsDbContext.Items
-                    .Where(i => i.Status == Status.Done)
-                    .OrderBy(i => i.Created)
-                    .ToList();
-
-                return View(allOldItems);
-            }
-            else
-            {
-                List<Item> allOldItems = itemsDbContext.Items
-                    .Where(i => i.Status == Status.Done && i.UserName == userName)
-                    .OrderBy(i => i.Created)
-                    .ToList();
-
-                return View(allOldItems);
-            }*/
-
-            // NEW APPROACH
             ViewBag.allUsersName = allUserNames;
             ViewBag.UserName = userName;
 
@@ -540,6 +429,7 @@ namespace AspNetIdentityTry1.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult EditItem(Item item2edit)
         {
             if (!ModelState.IsValid)
@@ -572,6 +462,7 @@ namespace AspNetIdentityTry1.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult DeleteItem(Item item2delete)
         {
             Item item2del = itemsDbContext.Items.Where(i => i.Id == item2delete.Id).FirstOrDefault();
