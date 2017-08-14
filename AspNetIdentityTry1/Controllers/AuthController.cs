@@ -312,5 +312,7 @@ namespace AspNetIdentityTry1.Controllers
             return "Role has been added";
         }*/
 
+        // some stupid changes
+
     }
 }
