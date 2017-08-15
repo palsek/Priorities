@@ -253,7 +253,8 @@ namespace AspNetIdentityTry1.Controllers
         [HttpGet]
         public ActionResult ShowUserItems(int page = 1, int numberPerPage = 20)
         {                                                        
-            string userName = User.Identity.Name;            
+            string userName = User.Identity.Name;
+            ViewBag.InvokingAction = "ShowUserItems";
                       
             // --------------------------------------- Calculate pagination------------------------------------------
 
@@ -292,6 +293,7 @@ namespace AspNetIdentityTry1.Controllers
             string userName = User.Identity.Name;
 
             ViewBag.NumberPerPage = numberPerPage;
+            ViewBag.InvokingAction = "ShowOldUserItems";
 
             int allItemsNumber = itemsDbContext.Items
                                                     .Where(i => i.UserName == userName && i.Status == Status.Done).Count();

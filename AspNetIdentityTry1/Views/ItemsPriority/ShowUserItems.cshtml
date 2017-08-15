@@ -41,25 +41,18 @@
 <input type="button" style="margin-bottom: 10px" value="Create" class="btn btn-default" onclick="location.href='@Url.Action("CreateNewItem", "ItemsPriority")'" />
 
 <div style="float: right">
-    @if (Model.FirstOrDefault().Status != AspNetIdentityTry1.Models.Status.Done)
-    {
-        <div>
-            <form action="/ItemsPriority/ShowUserItems" method="get">
-                Number per page:
-                @Html.DropDownList("numberPerPage", numersPerPage)
-                <input type="submit" value="Apply" class="btn btn-default" />
-            </form>
-        </div>
-    }
-    else
-    {
-        <div>
-            <form action="/ItemsPriority/ShowOldUserItems" method="get">
-                Number per page:
-                @Html.DropDownList("numberPerPage", numersPerPage)
-                <input type="submit" value="Apply" class="btn btn-default" />
-            </form>
-        </div>
+    @{
+        string invokingAction = ViewBag.InvokingAction == "ShowUserItems" ? "ShowUserItems" : "ShowOldUserItems";
+        string actionToInvoke = "/ItemsPriority/" + invokingAction;
+        
+         <div>
+             <form action="@actionToInvoke" method="get">
+                 Number per page:
+                 @Html.DropDownList("numberPerPage", numersPerPage)
+                 <input type="submit" value="Apply" class="btn btn-default" />
+             </form>
+            </div>
+        
     }
 </div>
 
@@ -117,39 +110,9 @@
     @for (int i = 1; i <= ViewBag.AllPageNumber; i++)
     {
         string sPage = i.ToString();
-
-        if(Model.FirstOrDefault().Status != AspNetIdentityTry1.Models.Status.Done)
-        {
-            @Html.ActionLink(sPage + " ", "ShowUserItems", new { page = i, numberPerPage = @ViewBag.NumberPerPage});
-        }
-        else
-        {
-            @Html.ActionLink(sPage + " ", "ShowOldUserItems", new { page = i, numberPerPage = @ViewBag.NumberPerPage });
-        }
+                
+        @Html.ActionLink(sPage + " ", invokingAction, new { page = i, numberPerPage = @ViewBag.NumberPerPage });        
     }        
 </div>
-
-@*@if(Model.FirstOrDefault().Status != AspNetIdentityTry1.Models.Status.Done)
-{ 
-    <div>
-        <form action="/ItemsPriority/ShowUserItems" method="get">       
-            Number per page: 
-                @Html.DropDownList("numberPerPage", numersPerPage)
-            <input type="submit" value="Apply" class="btn btn-default" />
-        </form>
-    </div>
-}
-else
-{
-    <div>
-        <form action="/ItemsPriority/ShowOldUserItems" method="get">
-            Number per page:
-            @Html.DropDownList("numberPerPage", numersPerPage)
-            <input type="submit" value="Apply" class="btn btn-default" />
-        </form>
-    </div>
-}*@
-<!-- numersPerPage -->
-
 
 
