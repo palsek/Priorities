@@ -456,8 +456,9 @@ namespace AspNetIdentityTry1.Controllers
             List<string> allCurrentUsersNames = new List<string>();
 
             if (User.IsInRole("Administrator"))
-            {
+            {                
                 allCurrentUsersNames = allUsers.Where(u => u.ParentName == User.Identity.Name).Select(u => u.UserName).ToList();
+                allCurrentUsersNames.Add(User.Identity.Name);
             }
             else
             {

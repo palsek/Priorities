@@ -110,9 +110,41 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Description)
             </td>
-            <td>
+            @*<td>
                 @Html.DisplayFor(modelItem => item.Priority)
-            </td>
+            </td>*@
+            @switch (item.Priority)
+            {
+                case AspNetIdentityTry1.Models.Priority.VeryHigh:
+                    <td style="color:#ff0000 ;">
+                        <b>@Html.DisplayFor(modelItem => item.Priority)</b>
+                    </td>
+                    break;
+
+                case AspNetIdentityTry1.Models.Priority.High:
+                <td style="color:#ff6a00 ;">
+                    <b>@Html.DisplayFor(modelItem => item.Priority)</b>
+                </td>
+                    break;
+
+                case AspNetIdentityTry1.Models.Priority.Medium:
+                <td style="color:#ffd800 ;">
+                    <b>@Html.DisplayFor(modelItem => item.Priority)</b>
+                </td>
+                    break;
+
+                case AspNetIdentityTry1.Models.Priority.Low:
+                <td style="color:#00ff21 ;">
+                    <b>@Html.DisplayFor(modelItem => item.Priority)</b>
+                </td>
+                    break;
+
+                default:
+                <td>
+                    <b>@Html.DisplayFor(modelItem => item.Priority)</b>
+                </td>
+                    break;
+            }
             <td>
                 @Html.DisplayFor(modelItem => item.Status)
             </td>
