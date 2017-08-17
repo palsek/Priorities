@@ -31,10 +31,14 @@
                         {
                             <th>@Html.ActionLink("Show my items", "ShowUserItems", "ItemsPriority", new { area = "" }, new { @class = "navbar-brand" })</th>
                             <th>@Html.ActionLink("Show old items", "ShowOldUserItems", "ItemsPriority", new { area = "" }, new { @class = "navbar-brand" })</th>                           
-                            if(User.IsInRole("Administrator"))
+                            if (User.IsInRole("Administrator") || User.IsInRole("SuperUser"))
                             {
                                 <th>@Html.ActionLink("Show all items", "ShowAllItems", "ItemsPriority", new { area = "" }, new { @class = "navbar-brand" })</th>
                                 <th>@Html.ActionLink("Show all old items", "ShowAllOldItems", "ItemsPriority", new { area = "" }, new { @class = "navbar-brand" })</th>
+                            }
+                            if (User.IsInRole("Administrator") || User.IsInRole("SuperUser"))
+                            {
+                                <th>@Html.ActionLink("Register user", "Register", "Auth", new { area = "" }, new { @class = "navbar-brand" })</th>
                             }
                             <th>@Html.ActionLink("Change password", "ChangePassword", "Auth", new { area = "" }, new { @class = "navbar-brand" })</th>
                             <th>@Html.ActionLink("Delete account", "DeleteUser", "Auth", new { area = "" }, new { @class = "navbar-brand" })</th>
@@ -44,7 +48,7 @@
                         else
                         {
                             <th>@Html.ActionLink("Log in", "LogIn", "Auth", new { area = "" }, new { @class = "navbar-brand" })</th>
-                            <th>@Html.ActionLink("Register", "Register", "Auth", new { area = "" }, new { @class = "navbar-brand" })</th>
+                            @*<th>@Html.ActionLink("Register", "Register", "Auth", new { area = "" }, new { @class = "navbar-brand" })</th>*@
                         }
                     </tr>
                 </table>

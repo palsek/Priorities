@@ -35,14 +35,14 @@ namespace AspNetIdentityTry1.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
+       // [AllowAnonymous]
         public ActionResult Register()
         {
             return View();
         }
                 
         [HttpPost]
-        [AllowAnonymous]
+       // [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public ActionResult Register(RegisterModel model)
         {
@@ -51,27 +51,33 @@ namespace AspNetIdentityTry1.Controllers
                // TempData["Notification"] = "ModelState is NOT valid";
 
                 return View();
-            }            
-            
+            }
+                       
             var user = new User()
             {
                 UserName = model.Email,
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 Position = model.Position,
-                Email = model.Email
-            };                        
-            
+                Email = model.Email,
+                ParentName = User.Identity.Name
+            };
+                        
             var result = userManager.Create(user, model.Password);
             var currentUser = userManager.FindByName(user.UserName);
-            // available roles: Administrator, CommonUser
-            var roleResult = userManager.AddToRole(currentUser.Id, "CommonUser");
+            
+            // available roles: Administrator, CommonUser, SuperUser
+            //var roleResult = userManager.AddToRole(currentUser.Id, "CommonUser");
+            //var roleResult = userManager.AddToRole(currentUser.Id, User.Identity.Name == "admin@admin.pl" ? "Administrator" : "CommonUser");
 
             if (result.Succeeded)
             {
+                var roleResult = userManager.AddToRole(currentUser.Id, User.IsInRole("Administrator") ? "Administrator" : "CommonUser");
+
                 TempData["Notification"] = "New user has been added";
 
-                return RedirectToAction("LogIn");
+               // return RedirectToAction("LogIn");
+                return RedirectToAction("ShowUserItems", "ItemsPriority");
             }
             else
             {
@@ -128,6 +134,16 @@ namespace AspNetIdentityTry1.Controllers
                 TempData["Notification"] = "Wrong user or password";
                 return View();
             }            
+        }
+
+        public ActionResult LogOut()
+        {
+            var ctx = Request.GetOwinContext();
+            ctx.Authentication.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+
+            TempData["Notification"] = "User has been logged out";
+
+            return RedirectToAction("LogIn");
         }
 
         [HttpGet]
@@ -212,15 +228,7 @@ namespace AspNetIdentityTry1.Controllers
             }            
         }
 
-        public ActionResult LogOut()
-        {
-            var ctx = Request.GetOwinContext();
-            ctx.Authentication.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-
-            TempData["Notification"] = "User has been logged out";
-
-            return RedirectToAction("LogIn");
-        }
+        
 
         [HttpGet]
         public ActionResult DeleteUser()
@@ -303,17 +311,62 @@ namespace AspNetIdentityTry1.Controllers
             return View();
         }*/
 
-       /* public string AddRole()
+        [AllowAnonymous]
+        [HttpGet]
+        public string SampleFunction(string param)
         {
-            IdentityRole role = new IdentityRole("CommonUser");
+            return param + " funkcja wykonana";
+        }
+
+        [AllowAnonymous]
+        public string AddRole(string roleToAdd)
+        {
+            // CommonUser, Administrator, SuperUser
+
+            IdentityRole role = new IdentityRole(roleToAdd);
 
             dbContext.Roles.Add(role);
             dbContext.SaveChanges();
 
-            return "Role has been added";
-        }*/
+            return "Role " + roleToAdd + " has been added.";
+        }
 
-        // some stupid changes
+        [AllowAnonymous]
+        public string UpdateRoles()
+        {
+            // available roles: SuperUser, Administrator, CommonUser
+
+            List<IdentityRole> roles = dbContext.Roles.ToList();// as List<IdentityRole>;
+
+            if (roles != null)
+            {
+
+                if (!roles.Any(r => r.Name == "SuperUser"))
+                {
+                    dbContext.Roles.Add(new IdentityRole { Name = "SuperUser" });
+                    dbContext.SaveChanges();
+                }
+
+                if (!roles.Any(r => r.Name == "Administrator"))
+                {
+                    dbContext.Roles.Add(new IdentityRole { Name = "Administrator" });
+                    dbContext.SaveChanges();
+                }
+
+                if (!roles.Any(r => r.Name == "CommonUser"))
+                {
+                    dbContext.Roles.Add(new IdentityRole { Name = "CommonUser" });
+                    dbContext.SaveChanges();
+                }
+
+                return "Roles have been updated.";
+            }
+            else
+            {
+                return "Something gone wrong.";
+            }
+
+        }
 
     }
 }

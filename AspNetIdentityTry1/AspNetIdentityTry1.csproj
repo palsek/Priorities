@@ -153,54 +153,15 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="InitialConfig.cs" />
     <Compile Include="ItemsDbContext5.cs" />
-    <Compile Include="Migrations\201706121119224_InitialCreate.cs" />
-    <Compile Include="Migrations\201706121119224_InitialCreate.Designer.cs">
-      <DependentUpon>201706121119224_InitialCreate.cs</DependentUpon>
+    <Compile Include="Migrations\201706270929282_InitialCreate.cs" />
+    <Compile Include="Migrations\201706270929282_InitialCreate.Designer.cs">
+      <DependentUpon>201706270929282_InitialCreate.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201706161221597_sample1.cs" />
-    <Compile Include="Migrations\201706161221597_sample1.Designer.cs">
-      <DependentUpon>201706161221597_sample1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201706161239253_wwf.cs" />
-    <Compile Include="Migrations\201706161239253_wwf.Designer.cs">
-      <DependentUpon>201706161239253_wwf.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201706161313431_mm.cs" />
-    <Compile Include="Migrations\201706161313431_mm.Designer.cs">
-      <DependentUpon>201706161313431_mm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201706161315557_mm2.cs" />
-    <Compile Include="Migrations\201706161315557_mm2.Designer.cs">
-      <DependentUpon>201706161315557_mm2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201706161324346_mm3.cs" />
-    <Compile Include="Migrations\201706161324346_mm3.Designer.cs">
-      <DependentUpon>201706161324346_mm3.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201706161327279_mm4.cs" />
-    <Compile Include="Migrations\201706161327279_mm4.Designer.cs">
-      <DependentUpon>201706161327279_mm4.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201706161331366_mm5.cs" />
-    <Compile Include="Migrations\201706161331366_mm5.Designer.cs">
-      <DependentUpon>201706161331366_mm5.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201706161416170_AspNetIdentityTry1.ItemsDbContext.cs" />
-    <Compile Include="Migrations\201706161416170_AspNetIdentityTry1.ItemsDbContext.Designer.cs">
-      <DependentUpon>201706161416170_AspNetIdentityTry1.ItemsDbContext.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201706161418065_mm19.cs" />
-    <Compile Include="Migrations\201706161418065_mm19.Designer.cs">
-      <DependentUpon>201706161418065_mm19.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201706161450013_mm12.cs" />
-    <Compile Include="Migrations\201706161450013_mm12.Designer.cs">
-      <DependentUpon>201706161450013_mm12.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201706191243495_mm13.cs" />
-    <Compile Include="Migrations\201706191243495_mm13.Designer.cs">
-      <DependentUpon>201706191243495_mm13.cs</DependentUpon>
+    <Compile Include="Migrations\201708161217574_parentNames.cs" />
+    <Compile Include="Migrations\201708161217574_parentNames.Designer.cs">
+      <DependentUpon>201708161217574_parentNames.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ChangePasswordModel.cs" />
@@ -239,41 +200,11 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201706121119224_InitialCreate.resx">
-      <DependentUpon>201706121119224_InitialCreate.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201706270929282_InitialCreate.resx">
+      <DependentUpon>201706270929282_InitialCreate.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201706161221597_sample1.resx">
-      <DependentUpon>201706161221597_sample1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201706161239253_wwf.resx">
-      <DependentUpon>201706161239253_wwf.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201706161313431_mm.resx">
-      <DependentUpon>201706161313431_mm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201706161315557_mm2.resx">
-      <DependentUpon>201706161315557_mm2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201706161324346_mm3.resx">
-      <DependentUpon>201706161324346_mm3.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201706161327279_mm4.resx">
-      <DependentUpon>201706161327279_mm4.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201706161331366_mm5.resx">
-      <DependentUpon>201706161331366_mm5.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201706161416170_AspNetIdentityTry1.ItemsDbContext.resx">
-      <DependentUpon>201706161416170_AspNetIdentityTry1.ItemsDbContext.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201706161418065_mm19.resx">
-      <DependentUpon>201706161418065_mm19.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201706161450013_mm12.resx">
-      <DependentUpon>201706161450013_mm12.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201706191243495_mm13.resx">
-      <DependentUpon>201706191243495_mm13.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201708161217574_parentNames.resx">
+      <DependentUpon>201708161217574_parentNames.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -12,7 +12,7 @@ namespace AspNetIdentityTry1.Models
         public string LastName { get; set; }
         public string Position { get; set; }
         public string Email { get; set; }
-
+        public string ParentName { get; set; }
        // public ICollection<Item> Items { get; set; }
     }
 }

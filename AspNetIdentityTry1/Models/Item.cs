@@ -18,9 +18,13 @@ namespace AspNetIdentityTry1.Models
         public string Description { get; set; }
       //  public string FakeProperty { get; set; }
 
-        //public virtual User User { get; set; }
+       // [Required]
+       // public virtual User User { get; set; }
         [Required]
         public string UserName { get; set; }
+
+        [Required]
+        public string ParentUserName { get; set; }
 
         [DataType(DataType.DateTime)]
         public DateTime Created { get; set; }

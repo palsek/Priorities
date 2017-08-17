@@ -36,7 +36,9 @@
     <h3 style="color: red">@TempData["Notification"]</h3>
 }
 
-<h2>Items for @User.Identity.Name user:</h2>
+@*<h2>Items for @User.Identity.Name user:</h2>*@
+    <br />
+<h2>User items</h2>
 
 <input type="button" style="margin-bottom: 10px" value="Create" class="btn btn-default" onclick="location.href='@Url.Action("CreateNewItem", "ItemsPriority")'" />
 
@@ -76,7 +78,7 @@
         <th></th>
     </tr>
 
-
+    <!--new { style="width:100px;height:25px" }-->
 
 @foreach (var item in Model) {
     <tr>
@@ -85,10 +87,42 @@
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Description)
-        </td>        
-        <td>
-            @Html.DisplayFor(modelItem => item.Priority)
-        </td>        
+        </td>  
+        
+        @switch (item.Priority)
+        {
+            case AspNetIdentityTry1.Models.Priority.VeryHigh:
+                <td style="color:#ff0000 ;">
+                    <b>@Html.DisplayFor(modelItem => item.Priority)</b>
+                </td>
+            break;
+
+            case AspNetIdentityTry1.Models.Priority.High:
+                <td style="color:#ff6a00 ;">
+                    <b>@Html.DisplayFor(modelItem => item.Priority)</b>
+                </td>
+            break;
+
+            case AspNetIdentityTry1.Models.Priority.Medium:
+            <td style="color:#ffd800 ;">
+                <b>@Html.DisplayFor(modelItem => item.Priority)</b>
+            </td>
+                break;
+
+            case AspNetIdentityTry1.Models.Priority.Low:
+            <td style="color:#b6ff00 ;">
+                <b>@Html.DisplayFor(modelItem => item.Priority)</b>
+            </td>
+                break;
+
+            default:
+            <td>
+                <b>@Html.DisplayFor(modelItem => item.Priority)</b>
+            </td>
+                break;
+        }
+              
+        
         <td>
             @Html.DisplayFor(modelItem => item.Status)
         </td>

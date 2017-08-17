@@ -16,18 +16,27 @@ namespace AspNetIdentityTry1.Controllers
         private ItemsDbContext5 itemsDbContext;
         private AppDbContext userDbContext;
         private List<string> allUserNames;
+        private List<User> allUsers;
+        //private User currentUser;
 
         public ItemsPriorityController()
         {
+            Debug.WriteLine("ItemsPriorityController / CONSTRUCTOR");
+
             itemsDbContext = new ItemsDbContext5();
             userDbContext = new AppDbContext();
 
-            List<User> allUsers = userDbContext.Users.OrderBy(u => u.UserName).ToList();
+            allUsers = userDbContext.Users.OrderBy(u => u.UserName).ToList();
             allUserNames = new List<string>();
+
+           // currentUser = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
                                     
             foreach (var user in allUsers)
             {
-                allUserNames.Add(user.UserName);
+                //if (user.ParentName == currentUser.ParentName)
+                //{
+                    allUserNames.Add(user.UserName);
+                //}
             }           
         }
 
@@ -42,7 +51,9 @@ namespace AspNetIdentityTry1.Controllers
         [HttpGet]
         public ActionResult CreateNewItem()
         {
-            Item item = new Item();
+            string parentUserName = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault().ParentName;
+
+            Item item = new Item() { ParentUserName = parentUserName };
 
             return View(item);
         }
@@ -51,7 +62,11 @@ namespace AspNetIdentityTry1.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult CreateNewItem(Item item)
         {
+            User currentUser = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+
             item.UserName = User.Identity.Name;
+            item.ParentUserName = currentUser.ParentName;
+            //item.User = User.Identity;
             item.Created = DateTime.Now;
             item.Status = Status.New;
 
@@ -72,9 +87,11 @@ namespace AspNetIdentityTry1.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult CreateItemForUser()
         {
-            ViewBag.allUsersName = allUserNames;
+            string parentUserName = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault().ParentName;
 
-            Item item = new Item();
+            ViewBag.allUsersName = allUsers.Where(u => u.ParentName == User.Identity.Name).Select(u => u.UserName);            
+
+            Item item = new Item() { ParentUserName = parentUserName };
 
             return View(item);
         }
@@ -84,8 +101,11 @@ namespace AspNetIdentityTry1.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult CreateItemForUser(Item item2add)
         {
+            User currentUser = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+
             item2add.Created = DateTime.Now;
             item2add.Status = Status.New;
+            item2add.ParentUserName = currentUser.UserName;
 
             if (!ModelState.IsValid)
             {
@@ -156,6 +176,7 @@ namespace AspNetIdentityTry1.Controllers
                     {
                         var queryToItems = itemsDbContext.Items
                                                            .Where(i => i.Status == Status.New || i.Status == Status.InProgress)
+                                                           .Where(i => i.ParentUserName == User.Identity.Name)
                                                            .OrderByDescending(i => i.Priority)
                                                            .ThenBy(i => i.Created);
 
@@ -181,7 +202,7 @@ namespace AspNetIdentityTry1.Controllers
                         {
                             int itemsPerLastPage = numberPerPage - (itemsToSkip + numberPerPage - allItemsNumber);
 
-                            currentItems = queryToItems.ToList().GetRange(itemsToSkip, itemsPerLastPage);
+                            currentItems = queryToItems.ToList().GetRange(itemsToSkip, itemsPerLastPage);                            
                         }
                         else // For page which IS full of items per page
                         {
@@ -195,6 +216,7 @@ namespace AspNetIdentityTry1.Controllers
                     {                        
                         var queryToItems = itemsDbContext.Items
                                                          .Where(i => i.Status == Status.Done)
+                                                         .Where(i => i.ParentUserName == User.Identity.Name)
                                                          .OrderByDescending(i => i.Priority)
                                                          .ThenBy(i => i.Created);
 
@@ -323,10 +345,11 @@ namespace AspNetIdentityTry1.Controllers
         [HttpGet]
         [Authorize(Roles = "Administrator")]
         public ActionResult ShowAllItems(string userName = "", int page = 1, int numberPerPage = 20)
-        {           
-            ViewBag.allUsersName = allUserNames;
-            ViewBag.UserName = userName;
+        {
+            User currentUser = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault() as User;
 
+            ViewBag.allUsersName = allUsers.Where(u => u.ParentName == currentUser.UserName).Select(u => u.UserName);
+            ViewBag.UserName = userName;
             ViewBag.NumberPerPage = numberPerPage;
 
             int allItemsNumber;
@@ -334,7 +357,10 @@ namespace AspNetIdentityTry1.Controllers
             if (userName == "" || userName == "All")
             {
                 allItemsNumber = itemsDbContext.Items
-                                                    .Where(i => i.Status == Status.New || i.Status == Status.InProgress).Count();
+                                                    .Where(i => i.Status == Status.New || i.Status == Status.InProgress)
+                                                    .Where(i => i.ParentUserName == currentUser.UserName)
+                                                    //.Where(i => i.ParentUserName == currentUser.Email)
+                                                    .Count();
             }
             else
             {
@@ -353,8 +379,10 @@ namespace AspNetIdentityTry1.Controllers
 
             ViewBag.AllPageNumber = allPageNumber;
 
-
-            List<Item> currentItems = GetData(userName, page, numberPerPage, allPageNumber, allItemsNumber, "ShowAllItems");
+            List<Item> currentItems = GetData(userName, page, numberPerPage, allPageNumber, allItemsNumber, "ShowAllItems")
+                .Where(i => i.ParentUserName == currentUser.UserName).ToList()
+                //.Where(i => i.ParentUserName == currentUser.Email).ToList()
+                ;
 
             if (currentItems != null)
             {
@@ -370,9 +398,10 @@ namespace AspNetIdentityTry1.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult ShowAllOldItems(string userName = "", int page = 1, int numberPerPage = 20)
         {
-            ViewBag.allUsersName = allUserNames;
-            ViewBag.UserName = userName;
+            User currentUser = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault() as User;
 
+            ViewBag.allUsersName = allUsers.Where(u => u.ParentName == currentUser.UserName).Select(u => u.UserName);
+            ViewBag.UserName = userName;
             ViewBag.NumberPerPage = numberPerPage;
 
             int allItemsNumber;
@@ -380,7 +409,9 @@ namespace AspNetIdentityTry1.Controllers
             if (userName == "" || userName == "All")
             {
                 allItemsNumber = itemsDbContext.Items
-                                                    .Where(i => i.Status == Status.Done).Count();
+                                                    .Where(i => i.Status == Status.Done)
+                                                    .Where(i => i.ParentUserName == currentUser.UserName)
+                                                    .Count();
             }
             else
             {
@@ -400,7 +431,9 @@ namespace AspNetIdentityTry1.Controllers
             ViewBag.AllPageNumber = allPageNumber;
 
 
-            List<Item> currentItems = GetData(userName, page, numberPerPage, allPageNumber, allItemsNumber, "ShowAllOldItems");
+            List<Item> currentItems = GetData(userName, page, numberPerPage, allPageNumber, allItemsNumber, "ShowAllOldItems")
+                .Where(i => i.ParentUserName == currentUser.UserName).ToList()
+                ;
 
             if (currentItems != null)
             {
@@ -418,12 +451,26 @@ namespace AspNetIdentityTry1.Controllers
         [HttpGet]
         public ActionResult EditItem(int Id)
         {
-            ViewBag.allUsersName = allUserNames;
+            string parentUserName = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault().ParentName;
+
+            List<string> allCurrentUsersNames = new List<string>();
+
+            if (User.IsInRole("Administrator"))
+            {
+                allCurrentUsersNames = allUsers.Where(u => u.ParentName == User.Identity.Name).Select(u => u.UserName).ToList();
+            }
+            else
+            {
+                allCurrentUsersNames.Add(User.Identity.Name);
+            }
+
+            ViewBag.allUsersName = /*allUserNames*/ allCurrentUsersNames;
 
             Item item = itemsDbContext.Items.Where(i => i.Id == Id).FirstOrDefault();
 
             if (item != null)
             {
+                //item.ParentUserName = parentUserName;
                 return View(item);
             }
 
@@ -476,7 +523,33 @@ namespace AspNetIdentityTry1.Controllers
             }
 
             return RedirectToAction("ShowUserItems");
-        }       
-                
+        }
+
+
+        /*[HttpGet]
+        public string GetSampleData()
+        {
+            string UserName = "admin1@admin1.pl";
+            string parentUserName = "admin@admin.pl";
+
+            int itemsCount = itemsDbContext.Items.Where(i => i.Status == Status.New || i.Status == Status.InProgress)
+                                                    .Where(i => i.ParentUserName == UserName)
+                                                    //.Where(i => i.ParentUserName == currentUser.Email)
+                                                    .Count();
+
+            List<Item> itemsList = itemsDbContext.Items.Where(i => i.Status == Status.New || i.Status == Status.InProgress)
+                                                    .Where(i => i.ParentUserName == UserName)
+                                                    .ToList();
+
+            string itemsNames = null;
+
+            foreach(Item i in itemsList)
+            {
+                itemsNames += i.Name;
+                itemsNames += ", ";
+            }
+
+            return "Liczba itemow: " + itemsCount.ToString() + " " + itemsNames;
+        }*/
     }
 }

@@ -17,6 +17,10 @@ namespace AspNetIdentityTry1
                  AuthenticationType = "ApplicationCookie", 
                  LoginPath = new PathString("/auth/login")
             });
+
+            InitialConfig initialConfig = new InitialConfig();
+            initialConfig.UpdateRoles();
+            initialConfig.AddSuperUserIfNotExist();
         }
     }
 }

@@ -27,7 +27,7 @@ namespace AspNetIdentityTry1.Models
 
         [Required]
         [DataType(DataType.Password)]
-        [Compare("Password")]   
+        [Compare("Password")]
         [Display(Name="Confirm password")]
         public string ConfirmPassword { get; set; }
 

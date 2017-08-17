@@ -3,7 +3,7 @@ namespace AspNetIdentityTry1.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class sample1 : DbMigration
+    public partial class InitialCreate : DbMigration
     {
         public override void Up()
         {
@@ -11,22 +11,20 @@ namespace AspNetIdentityTry1.Migrations
                 "dbo.Items",
                 c => new
                     {
-                        Id = c.String(nullable: false, maxLength: 128),
+                        Id = c.Int(nullable: false, identity: true),
                         Priority = c.Int(nullable: false),
-                        Name = c.String(),
+                        Name = c.String(nullable: false),
                         Description = c.String(),
-                        User_Id = c.String(maxLength: 128),
+                        UserName = c.String(nullable: false),
+                        Created = c.DateTime(nullable: false),
+                        Status = c.Int(nullable: false),
                     })
-                .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.AspNetUsers", t => t.User_Id)
-                .Index(t => t.User_Id);
+                .PrimaryKey(t => t.Id);
             
         }
         
         public override void Down()
         {
-            DropForeignKey("dbo.Items", "User_Id", "dbo.AspNetUsers");
-            DropIndex("dbo.Items", new[] { "User_Id" });
             DropTable("dbo.Items");
         }
     }
