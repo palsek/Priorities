@@ -72,7 +72,7 @@ namespace AspNetIdentityTry1.Controllers
 
             if (result.Succeeded)
             {
-                var roleResult = userManager.AddToRole(currentUser.Id, User.IsInRole("Administrator") ? "Administrator" : "CommonUser");
+                var roleResult = userManager.AddToRole(currentUser.Id, User.IsInRole("SuperUser") ? "Administrator" : "CommonUser");
 
                 TempData["Notification"] = "New user has been added";
 
@@ -231,8 +231,13 @@ namespace AspNetIdentityTry1.Controllers
         
 
         [HttpGet]
+        [Authorize(Roles = "Administrator, SuperUser")]
         public ActionResult DeleteUser()
         {
+            AppDbContext userDbContext = new AppDbContext();
+                       
+            ViewBag.allUsersName = userDbContext.Users.Where(u => u.ParentName == User.Identity.Name).Select(u => u.UserName);
+
             User appUser = userManager.FindByName(User.Identity.Name);
 
             if (appUser != null)
@@ -240,20 +245,22 @@ namespace AspNetIdentityTry1.Controllers
                 Debug.WriteLine("appUser.UserName: {0}, appUser.FirstName: {1}, appUser.LastName: {2}", appUser.UserName, appUser.FirstName, appUser.LastName);
             }
 
-            return View(appUser);
+            //return View(appUser);
+            return View();
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrator, SuperUser")]
         public ActionResult DeleteUser(User model)
         {
             if (!ModelState.IsValid)
             {
-                Debug.WriteLine("Auth / DeleteUser: ModelState is NOT valid");
+                AppDbContext userDbContext = new AppDbContext();
+                ViewBag.allUsersName = userDbContext.Users.Where(u => u.ParentName == User.Identity.Name).Select(u => u.UserName);
+
+                return View();
             }
-            else
-            {
-                Debug.WriteLine("Auth / DeleteUser: ModelState is valid");
-            }
+            
 
             var userToDelete = userManager.FindByName(model.UserName);
 
@@ -274,9 +281,9 @@ namespace AspNetIdentityTry1.Controllers
                     itemDbContext.SaveChanges();
                 }
 
-                Debug.WriteLine("User has been deleted successfully");
-                //LogOut();
-                return RedirectToAction("LogOut");
+                TempData["Notification"] = "User " + userToDelete.UserName + " has been deleted.";
+               
+                return RedirectToAction("DeleteUser");
             }
             else
             {

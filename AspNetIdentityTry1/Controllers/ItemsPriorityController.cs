@@ -73,8 +73,12 @@ namespace AspNetIdentityTry1.Controllers
             if (!ModelState.IsValid)
             {
                // TempData["Notification"] = "ModelState is NOT valid";
-               
-                return View();
+
+                string parentUserName = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault().ParentName;
+
+                Item item2add = new Item() { ParentUserName = parentUserName };
+
+                return View(item2add);
             }            
 
             itemsDbContext.Items.Add(item);            
@@ -110,9 +114,11 @@ namespace AspNetIdentityTry1.Controllers
             if (!ModelState.IsValid)
             {
                 //TempData["Notification"] = "ModelState is NOT valid";
-                ViewBag.allUsersName = allUserNames;
+                string parentUserName = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault().ParentName;
+                ViewBag.allUsersName = /*allUserNames;*/ allUsers.Where(u => u.ParentName == User.Identity.Name).Select(u => u.UserName);
+                Item item = new Item() { ParentUserName = parentUserName };
 
-                return View();
+                return View(item);
             }
 
             itemsDbContext.Items.Add(item2add);

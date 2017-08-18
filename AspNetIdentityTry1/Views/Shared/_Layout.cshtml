@@ -30,25 +30,21 @@
                         @if(User.Identity.IsAuthenticated)
                         {
                             <th>@Html.ActionLink("Show my items", "ShowUserItems", "ItemsPriority", new { area = "" }, new { @class = "navbar-brand" })</th>
-                            <th>@Html.ActionLink("Show old items", "ShowOldUserItems", "ItemsPriority", new { area = "" }, new { @class = "navbar-brand" })</th>                           
+                            <th>@Html.ActionLink("Show my old items", "ShowOldUserItems", "ItemsPriority", new { area = "" }, new { @class = "navbar-brand" })</th>                           
                             if (User.IsInRole("Administrator") || User.IsInRole("SuperUser"))
                             {
                                 <th>@Html.ActionLink("Show all items", "ShowAllItems", "ItemsPriority", new { area = "" }, new { @class = "navbar-brand" })</th>
-                                <th>@Html.ActionLink("Show all old items", "ShowAllOldItems", "ItemsPriority", new { area = "" }, new { @class = "navbar-brand" })</th>
-                            }
-                            if (User.IsInRole("Administrator") || User.IsInRole("SuperUser"))
-                            {
+                                <th>@Html.ActionLink("Show all old items", "ShowAllOldItems", "ItemsPriority", new { area = "" }, new { @class = "navbar-brand" })</th>                            
                                 <th>@Html.ActionLink("Register user", "Register", "Auth", new { area = "" }, new { @class = "navbar-brand" })</th>
+                                <th>@Html.ActionLink("Delete user", "DeleteUser", "Auth", new { area = "" }, new { @class = "navbar-brand" })</th>
                             }
-                            <th>@Html.ActionLink("Change password", "ChangePassword", "Auth", new { area = "" }, new { @class = "navbar-brand" })</th>
-                            <th>@Html.ActionLink("Delete account", "DeleteUser", "Auth", new { area = "" }, new { @class = "navbar-brand" })</th>
+                            <th>@Html.ActionLink("Change password", "ChangePassword", "Auth", new { area = "" }, new { @class = "navbar-brand" })</th>                            
                             <th>@Html.ActionLink("Log out", "LogOut", "Auth", new { area = "" }, new { @class = "navbar-brand" })</th>
                             <th><div style="font-size: large" class="text-danger">@User.Identity.Name</div></th>
                         }
                         else
                         {
                             <th>@Html.ActionLink("Log in", "LogIn", "Auth", new { area = "" }, new { @class = "navbar-brand" })</th>
-                            @*<th>@Html.ActionLink("Register", "Register", "Auth", new { area = "" }, new { @class = "navbar-brand" })</th>*@
                         }
                     </tr>
                 </table>
@@ -61,6 +57,7 @@
     </div>
 
     <div class="container body-content">
+        <br/>
         @RenderBody()
         <hr />
         <footer>

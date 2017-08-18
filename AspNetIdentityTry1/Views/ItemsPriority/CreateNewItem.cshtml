@@ -70,8 +70,12 @@
         </div>
 
         @Html.Hidden("UserName", User.Identity.Name)
-        @Html.Hidden("ParentUserName", Model.ParentUserName)
 
+        @if(Model != null)
+        { 
+            @Html.Hidden("ParentUserName", Model.ParentUserName)
+        }
+        
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Create" class="btn btn-default" />
