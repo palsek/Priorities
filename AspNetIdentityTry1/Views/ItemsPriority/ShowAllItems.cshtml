@@ -54,17 +54,7 @@
 
 <h2>All items:</h2>
 
-<input type="button" value="Create" class="btn btn-default" onclick="location.href='@Url.Action("CreateItemForUser", "ItemsPriority")'" />
-
 <div style="float: right">
-    @*@using (Html.BeginForm("ShowAllItems", "ItemsPriority", FormMethod.Get))
-    {
-        <p style="float: right">
-            <input type="submit" value="Show" class="btn btn-default" />
-        </p>
-        <p>@Html.DropDownList("userName", userList)</p>        
-    }*@
-
     <div>
         <form action="/ItemsPriority/ShowAllItems" method="get">
             Number per page:
@@ -73,8 +63,11 @@
             <input type="submit" value="Apply" class="btn btn-default" />
         </form>
     </div>
-
 </div>
+
+<p>
+    <input type="button" value="Create" class="btn btn-default" onclick="location.href='@Url.Action("CreateItemForUser", "ItemsPriority")'" />
+</p>
 
 <table class="table">
     <tr>
@@ -108,9 +101,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Description)
             </td>
-            @*<td>
-                @Html.DisplayFor(modelItem => item.Priority)
-            </td>*@
+                       
             @switch (item.Priority)
             {
                 case AspNetIdentityTry1.Models.Priority.VeryHigh:
@@ -153,7 +144,7 @@
                 @Html.DisplayFor(modelItem => item.UserName)
             </td>
             <td>
-                @Html.ActionLink("Edit", "EditItem", new { id = item.Id }) |
+                @Html.ActionLink("Edit", "EditItem", new { id = item.Id, invokingViewAction = ViewBag.InvokingAction }) |
                 @Html.ActionLink("Delete", "DeleteItem", new { id = item.Id })
             </td>
         </tr>
@@ -173,17 +164,3 @@
         
     }
 </div>
-
-    
-
-
-@*<div style="float: right">
-    @using (Html.BeginForm("ShowAllItems", "ItemsPriority", FormMethod.Get))
-    {
-        <p style="float: right">
-            <input type="submit" value="Show" class="btn btn-default" />
-        </p>
-
-        <p>@Html.DropDownList("userName", userList)</p>
-    }
-</div>*@

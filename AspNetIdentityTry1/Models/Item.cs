@@ -16,10 +16,7 @@ namespace AspNetIdentityTry1.Models
         [Required]
         public string Name { get; set; }
         public string Description { get; set; }
-      //  public string FakeProperty { get; set; }
-
-       // [Required]
-       // public virtual User User { get; set; }
+      
         [Required]
         public string UserName { get; set; }
 
@@ -30,6 +27,9 @@ namespace AspNetIdentityTry1.Models
         public DateTime Created { get; set; }
 
         public Status Status { get; set; }
+
+        [NotMapped]
+        public string InvokingViewAction { get; set; }
     }
 
     public enum Priority

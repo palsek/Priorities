@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Diagnostics;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace AspNetIdentityTry1.Controllers
@@ -15,29 +14,14 @@ namespace AspNetIdentityTry1.Controllers
 
         private ItemsDbContext5 itemsDbContext;
         private AppDbContext userDbContext;
-        private List<string> allUserNames;
-        private List<User> allUsers;
-        //private User currentUser;
+        private List<User> allUsers;        
 
         public ItemsPriorityController()
         {
-            Debug.WriteLine("ItemsPriorityController / CONSTRUCTOR");
-
             itemsDbContext = new ItemsDbContext5();
             userDbContext = new AppDbContext();
 
             allUsers = userDbContext.Users.OrderBy(u => u.UserName).ToList();
-            allUserNames = new List<string>();
-
-           // currentUser = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
-                                    
-            foreach (var user in allUsers)
-            {
-                //if (user.ParentName == currentUser.ParentName)
-                //{
-                    allUserNames.Add(user.UserName);
-                //}
-            }           
         }
 
         // GET: ItemsPriority
@@ -66,7 +50,6 @@ namespace AspNetIdentityTry1.Controllers
 
             item.UserName = User.Identity.Name;
             item.ParentUserName = currentUser.ParentName;
-            //item.User = User.Identity;
             item.Created = DateTime.Now;
             item.Status = Status.New;
 
@@ -115,7 +98,7 @@ namespace AspNetIdentityTry1.Controllers
             {
                 //TempData["Notification"] = "ModelState is NOT valid";
                 string parentUserName = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault().ParentName;
-                ViewBag.allUsersName = /*allUserNames;*/ allUsers.Where(u => u.ParentName == User.Identity.Name).Select(u => u.UserName);
+                ViewBag.allUsersName = allUsers.Where(u => u.ParentName == User.Identity.Name).Select(u => u.UserName);
                 Item item = new Item() { ParentUserName = parentUserName };
 
                 return View(item);
@@ -280,7 +263,7 @@ namespace AspNetIdentityTry1.Controllers
 
         [HttpGet]
         public ActionResult ShowUserItems(int page = 1, int numberPerPage = 20)
-        {                                                        
+        {
             string userName = User.Identity.Name;
             ViewBag.InvokingAction = "ShowUserItems";
                       
@@ -354,6 +337,7 @@ namespace AspNetIdentityTry1.Controllers
         {
             User currentUser = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault() as User;
 
+            ViewBag.InvokingAction = "ShowAllItems";
             ViewBag.allUsersName = allUsers.Where(u => u.ParentName == currentUser.UserName).Select(u => u.UserName);
             ViewBag.UserName = userName;
             ViewBag.NumberPerPage = numberPerPage;
@@ -365,7 +349,6 @@ namespace AspNetIdentityTry1.Controllers
                 allItemsNumber = itemsDbContext.Items
                                                     .Where(i => i.Status == Status.New || i.Status == Status.InProgress)
                                                     .Where(i => i.ParentUserName == currentUser.UserName)
-                                                    //.Where(i => i.ParentUserName == currentUser.Email)
                                                     .Count();
             }
             else
@@ -387,7 +370,6 @@ namespace AspNetIdentityTry1.Controllers
 
             List<Item> currentItems = GetData(userName, page, numberPerPage, allPageNumber, allItemsNumber, "ShowAllItems")
                 .Where(i => i.ParentUserName == currentUser.UserName).ToList()
-                //.Where(i => i.ParentUserName == currentUser.Email).ToList()
                 ;
 
             if (currentItems != null)
@@ -406,6 +388,7 @@ namespace AspNetIdentityTry1.Controllers
         {
             User currentUser = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault() as User;
 
+            ViewBag.InvokingAction = "ShowAllOldItems";
             ViewBag.allUsersName = allUsers.Where(u => u.ParentName == currentUser.UserName).Select(u => u.UserName);
             ViewBag.UserName = userName;
             ViewBag.NumberPerPage = numberPerPage;
@@ -455,7 +438,7 @@ namespace AspNetIdentityTry1.Controllers
         //=================================================== UPDATE =============================================================
 
         [HttpGet]
-        public ActionResult EditItem(int Id)
+        public ActionResult EditItem(int Id, string invokingViewAction = null)
         {
             string parentUserName = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault().ParentName;
 
@@ -471,13 +454,14 @@ namespace AspNetIdentityTry1.Controllers
                 allCurrentUsersNames.Add(User.Identity.Name);
             }
 
-            ViewBag.allUsersName = /*allUserNames*/ allCurrentUsersNames;
+            ViewBag.allUsersName = allCurrentUsersNames;
 
             Item item = itemsDbContext.Items.Where(i => i.Id == Id).FirstOrDefault();
 
             if (item != null)
             {
-                //item.ParentUserName = parentUserName;
+                item.InvokingViewAction = invokingViewAction;
+
                 return View(item);
             }
 
@@ -487,20 +471,36 @@ namespace AspNetIdentityTry1.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult EditItem(Item item2edit)
-        {
+        {           
+            string parentUserName = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault().ParentName;
+
+            List<string> allCurrentUsersNames = new List<string>();
+
+            if (User.IsInRole("Administrator"))
+            {
+                allCurrentUsersNames = allUsers.Where(u => u.ParentName == User.Identity.Name).Select(u => u.UserName).ToList();
+                allCurrentUsersNames.Add(User.Identity.Name);
+            }
+            else
+            {
+                allCurrentUsersNames.Add(User.Identity.Name);
+            }
+
             if (!ModelState.IsValid)
             {
                 //TempData["Notification"] = "ModelState is NOT valid";
-                ViewBag.allUsersName = allUserNames;
+                ViewBag.allUsersName = allCurrentUsersNames;
 
-                return View();
+                Item item = new Item() { ParentUserName = parentUserName };
+
+                return View(item);
             }
 
             itemsDbContext.Items.Attach(item2edit);
             itemsDbContext.Entry(item2edit).State = EntityState.Modified;
             itemsDbContext.SaveChanges();
 
-            return RedirectToAction("ShowUserItems");
+            return RedirectToAction(item2edit.InvokingViewAction == null ? "ShowUserItems" : item2edit.InvokingViewAction);
         }
 
         //=================================================== DELETE =============================================================
