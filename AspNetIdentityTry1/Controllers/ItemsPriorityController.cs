@@ -111,8 +111,8 @@ namespace AspNetIdentityTry1.Controllers
         }
 
         //=================================================== READ =============================================================
-
-        List<Item> GetData(string userName, int page, int numberPerPage, int allPageNumber, int allItemsNumber, string invokeAction)
+                
+        List<Item> GetData(string userName, int page, int numberPerPage, int allPageNumber, int allItemsNumber, string invokeAction, string orderBy = "Name", string orderDirection = "desc")
         {
             int itemsToSkip = (numberPerPage * page) - numberPerPage;
 
@@ -120,14 +120,57 @@ namespace AspNetIdentityTry1.Controllers
             {
                 List<Item> currentItems = null;
                                 
-
                 if (invokeAction == "ShowUserItems")
-                {                   
-                   var queryToItems = itemsDbContext.Items
-                                                            .Where(i => i.UserName == userName && (i.Status == Status.New || i.Status == Status.InProgress))
-                                                            .OrderByDescending(i => i.Priority)
-                                                            .ThenBy(i => i.Created);
+                {
+                    var queryToItems = itemsDbContext.Items.Where(i => i.UserName == userName && (i.Status == Status.New || i.Status == Status.InProgress));
 
+                    switch(orderBy)
+                    {
+                        case "Name":
+                            if (orderDirection == "desc")
+                            {
+                                queryToItems = queryToItems.OrderByDescending(i => i.Name);
+                            }
+                            else
+                            {
+                                queryToItems = queryToItems.OrderBy(i => i.Name);
+                            }
+                        break;
+                       
+                        case "Status":
+                            if (orderDirection == "desc")
+                            {
+                                queryToItems = queryToItems.OrderByDescending(i => i.Status);
+                            }
+                            else
+                            {
+                                queryToItems = queryToItems.OrderBy(i => i.Status);
+                            }
+                        break;
+
+                        case "Created":
+                            if (orderDirection == "desc")
+                            {
+                                queryToItems = queryToItems.OrderByDescending(i => i.Created);
+                            }
+                            else
+                            {
+                                queryToItems = queryToItems.OrderBy(i => i.Created);
+                            }
+                        break;
+
+                        default:
+                             if (orderDirection == "desc")
+                            {
+                                queryToItems = queryToItems.OrderByDescending(i => i.Priority);
+                            }
+                            else
+                            {
+                                queryToItems = queryToItems.OrderBy(i => i.Priority);
+                            }
+                        break;
+                    }
+                  
                    if (itemsToSkip + numberPerPage > allItemsNumber)  // For page which is NOT full of items per page (the last page)
                    {
                        int itemsPerLastPage = numberPerPage - (itemsToSkip + numberPerPage - allItemsNumber);
@@ -143,8 +186,54 @@ namespace AspNetIdentityTry1.Controllers
                 {
                     var queryToItems = itemsDbContext.Items
                                                             .Where(i => i.UserName == userName && (i.Status == Status.Done))
-                                                            .OrderByDescending(i => i.Priority)
-                                                            .ThenBy(i => i.Created);
+                                                            ;
+
+                    switch (orderBy)
+                    {
+                        case "Name":
+                            if (orderDirection == "desc")
+                            {
+                                queryToItems = queryToItems.OrderByDescending(i => i.Name);
+                            }
+                            else
+                            {
+                                queryToItems = queryToItems.OrderBy(i => i.Name);
+                            }
+                            break;
+
+                        case "Status":
+                            if (orderDirection == "desc")
+                            {
+                                queryToItems = queryToItems.OrderByDescending(i => i.Status);
+                            }
+                            else
+                            {
+                                queryToItems = queryToItems.OrderBy(i => i.Status);
+                            }
+                            break;
+
+                        case "Created":
+                            if (orderDirection == "desc")
+                            {
+                                queryToItems = queryToItems.OrderByDescending(i => i.Created);
+                            }
+                            else
+                            {
+                                queryToItems = queryToItems.OrderBy(i => i.Created);
+                            }
+                            break;
+
+                        default:
+                            if (orderDirection == "desc")
+                            {
+                                queryToItems = queryToItems.OrderByDescending(i => i.Priority);
+                            }
+                            else
+                            {
+                                queryToItems = queryToItems.OrderBy(i => i.Priority);
+                            }
+                            break;
+                    }
 
                     if (itemsToSkip + numberPerPage > allItemsNumber)  // For page which is NOT full of items per page (the last page)
                     {
@@ -166,8 +255,54 @@ namespace AspNetIdentityTry1.Controllers
                         var queryToItems = itemsDbContext.Items
                                                            .Where(i => i.Status == Status.New || i.Status == Status.InProgress)
                                                            .Where(i => i.ParentUserName == User.Identity.Name)
-                                                           .OrderByDescending(i => i.Priority)
-                                                           .ThenBy(i => i.Created);
+                                                           ;
+
+                        switch (orderBy)
+                        {
+                            case "Name":
+                                if (orderDirection == "desc")
+                                {
+                                    queryToItems = queryToItems.OrderByDescending(i => i.Name);
+                                }
+                                else
+                                {
+                                    queryToItems = queryToItems.OrderBy(i => i.Name);
+                                }
+                                break;
+
+                            case "Status":
+                                if (orderDirection == "desc")
+                                {
+                                    queryToItems = queryToItems.OrderByDescending(i => i.Status);
+                                }
+                                else
+                                {
+                                    queryToItems = queryToItems.OrderBy(i => i.Status);
+                                }
+                                break;
+
+                            case "Created":
+                                if (orderDirection == "desc")
+                                {
+                                    queryToItems = queryToItems.OrderByDescending(i => i.Created);
+                                }
+                                else
+                                {
+                                    queryToItems = queryToItems.OrderBy(i => i.Created);
+                                }
+                                break;
+
+                            default:
+                                if (orderDirection == "desc")
+                                {
+                                    queryToItems = queryToItems.OrderByDescending(i => i.Priority);
+                                }
+                                else
+                                {
+                                    queryToItems = queryToItems.OrderBy(i => i.Priority);
+                                }
+                                break;
+                        }
 
                         if (itemsToSkip + numberPerPage > allItemsNumber)  // For page which is NOT full of items per page (the last page)
                         {
@@ -184,8 +319,54 @@ namespace AspNetIdentityTry1.Controllers
                     {                       
                         var queryToItems = itemsDbContext.Items
                                                           .Where(i => (i.Status == Status.New || i.Status == Status.InProgress) && i.UserName == userName)
-                                                          .OrderByDescending(i => i.Priority)
-                                                          .ThenBy(i => i.Created);
+                                                          ;
+
+                        switch (orderBy)
+                        {
+                            case "Name":
+                                if (orderDirection == "desc")
+                                {
+                                    queryToItems = queryToItems.OrderByDescending(i => i.Name);
+                                }
+                                else
+                                {
+                                    queryToItems = queryToItems.OrderBy(i => i.Name);
+                                }
+                                break;
+
+                            case "Status":
+                                if (orderDirection == "desc")
+                                {
+                                    queryToItems = queryToItems.OrderByDescending(i => i.Status);
+                                }
+                                else
+                                {
+                                    queryToItems = queryToItems.OrderBy(i => i.Status);
+                                }
+                                break;
+
+                            case "Created":
+                                if (orderDirection == "desc")
+                                {
+                                    queryToItems = queryToItems.OrderByDescending(i => i.Created);
+                                }
+                                else
+                                {
+                                    queryToItems = queryToItems.OrderBy(i => i.Created);
+                                }
+                                break;
+
+                            default:
+                                if (orderDirection == "desc")
+                                {
+                                    queryToItems = queryToItems.OrderByDescending(i => i.Priority);
+                                }
+                                else
+                                {
+                                    queryToItems = queryToItems.OrderBy(i => i.Priority);
+                                }
+                                break;
+                        }
 
                         if (itemsToSkip + numberPerPage > allItemsNumber)  // For page which is NOT full of items per page (the last page)
                         {
@@ -206,8 +387,53 @@ namespace AspNetIdentityTry1.Controllers
                         var queryToItems = itemsDbContext.Items
                                                          .Where(i => i.Status == Status.Done)
                                                          .Where(i => i.ParentUserName == User.Identity.Name)
-                                                         .OrderByDescending(i => i.Priority)
-                                                         .ThenBy(i => i.Created);
+                                                         ;
+                        switch (orderBy)
+                        {
+                            case "Name":
+                                if (orderDirection == "desc")
+                                {
+                                    queryToItems = queryToItems.OrderByDescending(i => i.Name);
+                                }
+                                else
+                                {
+                                    queryToItems = queryToItems.OrderBy(i => i.Name);
+                                }
+                                break;
+
+                            case "Status":
+                                if (orderDirection == "desc")
+                                {
+                                    queryToItems = queryToItems.OrderByDescending(i => i.Status);
+                                }
+                                else
+                                {
+                                    queryToItems = queryToItems.OrderBy(i => i.Status);
+                                }
+                                break;
+
+                            case "Created":
+                                if (orderDirection == "desc")
+                                {
+                                    queryToItems = queryToItems.OrderByDescending(i => i.Created);
+                                }
+                                else
+                                {
+                                    queryToItems = queryToItems.OrderBy(i => i.Created);
+                                }
+                                break;
+
+                            default:
+                                if (orderDirection == "desc")
+                                {
+                                    queryToItems = queryToItems.OrderByDescending(i => i.Priority);
+                                }
+                                else
+                                {
+                                    queryToItems = queryToItems.OrderBy(i => i.Priority);
+                                }
+                                break;
+                        }
 
                         if (itemsToSkip + numberPerPage > allItemsNumber)  // For page which is NOT full of items per page (the last page)
                         {
@@ -224,8 +450,53 @@ namespace AspNetIdentityTry1.Controllers
                     {                        
                         var queryToItems = itemsDbContext.Items
                                                          .Where(i => i.Status == Status.Done && i.UserName == userName)
-                                                         .OrderByDescending(i => i.Priority)
-                                                         .ThenBy(i => i.Created);
+                                                         ;
+                        switch (orderBy)
+                        {
+                            case "Name":
+                                if (orderDirection == "desc")
+                                {
+                                    queryToItems = queryToItems.OrderByDescending(i => i.Name);
+                                }
+                                else
+                                {
+                                    queryToItems = queryToItems.OrderBy(i => i.Name);
+                                }
+                                break;
+
+                            case "Status":
+                                if (orderDirection == "desc")
+                                {
+                                    queryToItems = queryToItems.OrderByDescending(i => i.Status);
+                                }
+                                else
+                                {
+                                    queryToItems = queryToItems.OrderBy(i => i.Status);
+                                }
+                                break;
+
+                            case "Created":
+                                if (orderDirection == "desc")
+                                {
+                                    queryToItems = queryToItems.OrderByDescending(i => i.Created);
+                                }
+                                else
+                                {
+                                    queryToItems = queryToItems.OrderBy(i => i.Created);
+                                }
+                                break;
+
+                            default:
+                                if (orderDirection == "desc")
+                                {
+                                    queryToItems = queryToItems.OrderByDescending(i => i.Priority);
+                                }
+                                else
+                                {
+                                    queryToItems = queryToItems.OrderBy(i => i.Priority);
+                                }
+                                break;
+                        }
 
                         if (itemsToSkip + numberPerPage > allItemsNumber)  // For page which is NOT full of items per page (the last page)
                         {
@@ -262,18 +533,20 @@ namespace AspNetIdentityTry1.Controllers
         }
 
         [HttpGet]
-        public ActionResult ShowUserItems(int page = 1, int numberPerPage = 20)
+        public ActionResult ShowUserItems(int page = 1, int numberPerPage = 20, string orderBy = "Priority", string orderDirection = "desc")
         {
             string userName = User.Identity.Name;
             ViewBag.InvokingAction = "ShowUserItems";
                       
             // --------------------------------------- Calculate pagination------------------------------------------
-
-            ViewBag.NumberPerPage = numberPerPage;
-                        
             int allItemsNumber = itemsDbContext.Items
                                                     .Where(i => i.UserName == userName && (i.Status == Status.New || i.Status == Status.InProgress))
                                                     .Count();
+
+            if (numberPerPage <= 0)
+            {
+                numberPerPage = 20;
+            }
 
             int allPageNumber = allItemsNumber / numberPerPage;
             int modulo = allItemsNumber % numberPerPage;
@@ -282,15 +555,25 @@ namespace AspNetIdentityTry1.Controllers
             {
                 allPageNumber++;
             }
-
-            ViewBag.AllPageNumber = allPageNumber;
-
+            
             //------------------------------ WYCIAGNIECIE LOGIKI DO OSOBNEJ FUNKCJI ----------------------------------------------
-            List<Item> currentItems = GetData(userName, page, numberPerPage, allPageNumber, allItemsNumber, "ShowUserItems");
+            List<Item> currentItems = GetData(userName, page, numberPerPage, allPageNumber, allItemsNumber, "ShowUserItems", orderBy, orderDirection);
 
             if (currentItems != null)
             {
-                return View(currentItems);
+                ItemsData itemsData = new ItemsData()
+                {
+                    Items = currentItems,
+                    ViewInfo = new ViewInfo() 
+                    {
+                        NumberPerPage = numberPerPage,
+                        AllPageNumber = allPageNumber,
+                        OrderBy = orderBy,
+                        OrderDirection = orderDirection
+                    }
+                };                
+
+                return View(itemsData);
             }
             else
             {
@@ -299,31 +582,46 @@ namespace AspNetIdentityTry1.Controllers
         }
 
         [HttpGet]
-        public ActionResult ShowOldUserItems(int page = 1, int numberPerPage = 20)
+        public ActionResult ShowOldUserItems(int page = 1, int numberPerPage = 20, string orderBy = "Priority", string orderDirection = "desc")
         {           
             string userName = User.Identity.Name;
-
-            ViewBag.NumberPerPage = numberPerPage;
+                       
             ViewBag.InvokingAction = "ShowOldUserItems";
 
             int allItemsNumber = itemsDbContext.Items
                                                     .Where(i => i.UserName == userName && i.Status == Status.Done).Count();
 
+            if (numberPerPage <= 0)
+            {
+                numberPerPage = 20;
+            }
+
             int allPageNumber = allItemsNumber / numberPerPage;
             int modulo = allItemsNumber % numberPerPage;
+
 
             if (allPageNumber == 0 || modulo > 0)
             {
                 allPageNumber++;
             }
-
-            ViewBag.AllPageNumber = allPageNumber;
-
-            List<Item> currentItems = GetData(userName, page, numberPerPage, allPageNumber, allItemsNumber, "ShowOldUserItems");
+                      
+            List<Item> currentItems = GetData(userName, page, numberPerPage, allPageNumber, allItemsNumber, "ShowOldUserItems", orderBy, orderDirection);
 
             if (currentItems != null)
             {
-                return View("ShowUserItems", currentItems);
+                ItemsData itemsData = new ItemsData()
+                {
+                    Items = currentItems,
+                    ViewInfo = new ViewInfo() 
+                    { 
+                        NumberPerPage = numberPerPage,
+                        AllPageNumber = allPageNumber,
+                        OrderBy = orderBy,
+                        OrderDirection = orderDirection
+                    }
+                };
+                
+                return View("ShowUserItems", itemsData);
             }
             else
             {
@@ -333,14 +631,11 @@ namespace AspNetIdentityTry1.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Administrator")]
-        public ActionResult ShowAllItems(string userName = "", int page = 1, int numberPerPage = 20)
+        public ActionResult ShowAllItems(string userName = "", int page = 1, int numberPerPage = 20, string orderBy = "Priority", string orderDirection = "desc")
         {
             User currentUser = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault() as User;
 
-            ViewBag.InvokingAction = "ShowAllItems";
-            ViewBag.allUsersName = allUsers.Where(u => u.ParentName == currentUser.UserName).Select(u => u.UserName);
-            ViewBag.UserName = userName;
-            ViewBag.NumberPerPage = numberPerPage;
+            ViewBag.InvokingAction = "ShowAllItems";          
 
             int allItemsNumber;
 
@@ -357,6 +652,10 @@ namespace AspNetIdentityTry1.Controllers
                                                     .Where(i => (i.Status == Status.New || i.Status == Status.InProgress) && i.UserName == userName).Count();
             }
 
+            if (numberPerPage <= 0)
+            {
+                numberPerPage = 20;
+            }
 
             int allPageNumber = allItemsNumber / numberPerPage;
             int modulo = allItemsNumber % numberPerPage;
@@ -366,15 +665,27 @@ namespace AspNetIdentityTry1.Controllers
                 allPageNumber++;
             }
 
-            ViewBag.AllPageNumber = allPageNumber;
-
-            List<Item> currentItems = GetData(userName, page, numberPerPage, allPageNumber, allItemsNumber, "ShowAllItems")
+            List<Item> currentItems = GetData(userName, page, numberPerPage, allPageNumber, allItemsNumber, "ShowAllItems", orderBy, orderDirection)
                 .Where(i => i.ParentUserName == currentUser.UserName).ToList()
                 ;
 
             if (currentItems != null)
             {
-                return View(currentItems);
+                ItemsData itemsData = new ItemsData()
+                {
+                    Items = currentItems,
+                    ViewInfo = new ViewInfo() 
+                    { 
+                        AllUsersName = allUsers.Where(u => u.ParentName == currentUser.UserName).Select(u => u.UserName).ToList<string>(),
+                        UserName = userName,
+                        NumberPerPage = numberPerPage,
+                        AllPageNumber = allPageNumber,
+                        OrderBy = orderBy,
+                        OrderDirection = orderDirection
+                    }
+                };
+                
+                return View(itemsData);
             }
             else
             {
@@ -384,14 +695,11 @@ namespace AspNetIdentityTry1.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Administrator")]
-        public ActionResult ShowAllOldItems(string userName = "", int page = 1, int numberPerPage = 20)
+        public ActionResult ShowAllOldItems(string userName = "", int page = 1, int numberPerPage = 20, string orderBy = "Priority", string orderDirection = "desc")
         {
             User currentUser = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault() as User;
 
             ViewBag.InvokingAction = "ShowAllOldItems";
-            ViewBag.allUsersName = allUsers.Where(u => u.ParentName == currentUser.UserName).Select(u => u.UserName);
-            ViewBag.UserName = userName;
-            ViewBag.NumberPerPage = numberPerPage;
 
             int allItemsNumber;
 
@@ -408,6 +716,10 @@ namespace AspNetIdentityTry1.Controllers
                                                     .Where(i => i.Status == Status.Done && i.UserName == userName).Count();
             }
 
+            if (numberPerPage <= 0)
+            {
+                numberPerPage = 20;
+            }
 
             int allPageNumber = allItemsNumber / numberPerPage;
             int modulo = allItemsNumber % numberPerPage;
@@ -416,17 +728,28 @@ namespace AspNetIdentityTry1.Controllers
             {
                 allPageNumber++;
             }
-
-            ViewBag.AllPageNumber = allPageNumber;
-
-
-            List<Item> currentItems = GetData(userName, page, numberPerPage, allPageNumber, allItemsNumber, "ShowAllOldItems")
+                       
+            List<Item> currentItems = GetData(userName, page, numberPerPage, allPageNumber, allItemsNumber, "ShowAllOldItems", orderBy, orderDirection)
                 .Where(i => i.ParentUserName == currentUser.UserName).ToList()
                 ;
 
             if (currentItems != null)
             {
-                return View(currentItems);
+                ItemsData itemsData = new ItemsData()
+                {
+                    Items = currentItems,
+                    ViewInfo = new ViewInfo() 
+                    {
+                        AllUsersName = allUsers.Where(u => u.ParentName == currentUser.UserName).Select(u => u.UserName).ToList<string>(),
+                        UserName = userName,
+                        NumberPerPage = numberPerPage,
+                        AllPageNumber = allPageNumber,
+                        OrderBy = orderBy,
+                        OrderDirection = orderDirection
+                    }
+                };
+
+                return View(itemsData);
             }
             else
             {

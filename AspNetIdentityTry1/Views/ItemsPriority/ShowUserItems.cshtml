@@ -1,33 +1,46 @@
-﻿@model IEnumerable<AspNetIdentityTry1.Models.Item>
+﻿@model AspNetIdentityTry1.Models.ItemsData
+
 
 @{            
     ViewBag.Title = "ShowUserItems";
+    
+    List<SelectListItem> orderByList = new List<SelectListItem>();
+    orderByList.Add(new SelectListItem
+    {
+        Text = "Priority",
+        Value = "Priority"
+    });
+    orderByList.Add(new SelectListItem
+    {
+        Text = "Name",
+        Value = "Name"
+    });
+    orderByList.Add(new SelectListItem
+    {
+        Text = "Description",
+        Value = "Description"
+    });
+    orderByList.Add(new SelectListItem
+    {
+        Text = "Status",
+        Value = "Status"
+    });
+    orderByList.Add(new SelectListItem
+    {
+        Text = "Created",
+        Value = "Created"
+    });
 
-    List<SelectListItem> numersPerPage = new List<SelectListItem>();
-    numersPerPage.Add(new SelectListItem
+    List<SelectListItem> orderDirection = new List<SelectListItem>();
+    orderDirection.Add(new SelectListItem
     {
-        Text = "5",
-        Value = "5"
+         Text = "Descending",
+         Value = "desc"
     });
-    numersPerPage.Add(new SelectListItem
+    orderDirection.Add(new SelectListItem
     {
-        Text = "10",
-        Value = "10"
-    });
-    numersPerPage.Add(new SelectListItem
-    {
-        Text = "20",
-        Value = "20"
-    });
-    numersPerPage.Add(new SelectListItem
-    {
-        Text = "50",
-        Value = "50"
-    });
-    numersPerPage.Add(new SelectListItem
-    {
-        Text = "100",
-        Value = "100"
+        Text = "Ascending",
+        Value = "asc"
     });
 
     string invokingAction = ViewBag.InvokingAction == "ShowUserItems" ? "ShowUserItems" : "ShowOldUserItems";
@@ -39,7 +52,14 @@
     <h3 style="color: red">@TempData["Notification"]</h3>
 }
 
-<h2>User items</h2>
+@if (ViewBag.InvokingAction == "ShowUserItems")
+{ 
+    <h2>User items</h2>
+}
+else
+{
+    <h2>User old items</h2>
+}
 
 <input type="button" style="margin-bottom: 10px" value="Create" class="btn btn-default" onclick="location.href='@Url.Action("CreateNewItem", "ItemsPriority")'" />
 
@@ -47,8 +67,11 @@
     @{               
          <div>
              <form action="@actionToInvoke" method="get">
+                 Order by:
+                 @Html.DropDownList("orderBy", orderByList)
+                 @Html.DropDownList("orderDirection", orderDirection)
                  Number per page:
-                 @Html.DropDownList("numberPerPage", numersPerPage)
+                 @Html.TextBox("numberPerPage", 20, new { style = "width:30px", @maxlength = "3" })
                  <input type="submit" value="Apply" class="btn btn-default" />
              </form>
             </div>
@@ -58,24 +81,24 @@
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Name)
+            @Html.DisplayNameFor(m => m.Items.FirstOrDefault().Name)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Description)
+            @Html.DisplayNameFor(model => model.Items.FirstOrDefault().Description)
         </th>        
         <th>
-            @Html.DisplayNameFor(m => m.Priority)
+            @Html.DisplayNameFor(m => m.Items.FirstOrDefault().Priority)
         </th>
         <th>
-            @Html.DisplayNameFor(m => m.Status)
+            @Html.DisplayNameFor(m => m.Items.FirstOrDefault().Status)
         </th>
         <th>
-            @Html.DisplayNameFor(m => m.Created)
+            @Html.DisplayNameFor(m => m.Items.FirstOrDefault().Created)
         </th>
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
+@foreach (var item in Model.Items) {
     <tr>
         <td>
             @Html.DisplayFor(modelItem => item.Name)
@@ -135,11 +158,11 @@
 <div style="font-size: 25px">    
     Page: 
 
-    @for (int i = 1; i <= ViewBag.AllPageNumber; i++)
+    @for (int i = 1; i <= Model.ViewInfo.AllPageNumber; i++)
     {
         string sPage = i.ToString();
                 
-        @Html.ActionLink(sPage + " ", invokingAction, new { page = i, numberPerPage = @ViewBag.NumberPerPage });        
+        @Html.ActionLink(sPage + " ", invokingAction, new { page = i, numberPerPage = Model.ViewInfo.NumberPerPage, orderBy = Model.ViewInfo.OrderBy, orderDirection = Model.ViewInfo.OrderDirection });        
     }        
 </div>
 

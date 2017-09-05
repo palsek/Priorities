@@ -30,6 +30,9 @@ namespace AspNetIdentityTry1.Models
 
         [NotMapped]
         public string InvokingViewAction { get; set; }
+
+        [NotMapped]
+        public ViewInfo ViewInfo { get; set; }
     }
 
     public enum Priority

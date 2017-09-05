@@ -1,11 +1,11 @@
-﻿@model IEnumerable<AspNetIdentityTry1.Models.Item>
+﻿@model AspNetIdentityTry1.Models.ItemsData
 
 @{
     ViewBag.Title = "ShowAllItems";
 
     List<SelectListItem> userList = new List<SelectListItem>();
 
-    if (ViewBag.allUsersName != null)
+    if (Model.ViewInfo.AllUsersName != null)
     {
         userList.Add(new SelectListItem
         {
@@ -13,7 +13,7 @@
             Value = "All"
         });
 
-        foreach (var userName in ViewBag.allUsersName)
+        foreach (var userName in Model.ViewInfo.AllUsersName)
         {
             userList.Add(new SelectListItem
             {
@@ -22,33 +22,45 @@
             });
         }
     }
+      
+    List<SelectListItem> orderByList = new List<SelectListItem>();
+    orderByList.Add(new SelectListItem
+    {
+        Text = "Priority",
+        Value = "Priority"
+    });
+    orderByList.Add(new SelectListItem
+    {
+        Text = "Name",
+        Value = "Name"
+    });
+    orderByList.Add(new SelectListItem
+    {
+        Text = "Description",
+        Value = "Description"
+    });
+    orderByList.Add(new SelectListItem
+    {
+        Text = "Status",
+        Value = "Status"
+    });
+    orderByList.Add(new SelectListItem
+    {
+        Text = "Created",
+        Value = "Created"
+    });
 
-    List<SelectListItem> numersPerPage = new List<SelectListItem>();
-    numersPerPage.Add(new SelectListItem
+    List<SelectListItem> orderDirection = new List<SelectListItem>();
+    orderDirection.Add(new SelectListItem
     {
-        Text = "5",
-        Value = "5"
+        Text = "Descending",
+        Value = "desc"
     });
-    numersPerPage.Add(new SelectListItem
+    orderDirection.Add(new SelectListItem
     {
-        Text = "10",
-        Value = "10"
-    });
-    numersPerPage.Add(new SelectListItem
-    {
-        Text = "20",
-        Value = "20"
-    });
-    numersPerPage.Add(new SelectListItem
-    {
-        Text = "50",
-        Value = "50"
-    });
-    numersPerPage.Add(new SelectListItem
-    {
-        Text = "100",
-        Value = "100"
-    });       
+        Text = "Ascending",
+        Value = "asc"
+    });    
     
 }
 
@@ -57,8 +69,12 @@
 <div style="float: right">
     <div>
         <form action="/ItemsPriority/ShowAllItems" method="get">
+            Order by:
+            @Html.DropDownList("orderBy", orderByList)
+            @Html.DropDownList("orderDirection", orderDirection)
             Number per page:
-            @Html.DropDownList("numberPerPage", numersPerPage)
+            @Html.TextBox("numberPerPage", 20, new { style = "width:30px", @maxlength = "3" })
+            User:
             @Html.DropDownList("userName", userList)
             <input type="submit" value="Apply" class="btn btn-default" />
         </form>
@@ -72,27 +88,27 @@
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Name)
+            @Html.DisplayNameFor(model => model.Items.FirstOrDefault().Name)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Description)
+            @Html.DisplayNameFor(model => model.Items.FirstOrDefault().Description)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Priority)
+            @Html.DisplayNameFor(model => model.Items.FirstOrDefault().Priority)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Status)
+            @Html.DisplayNameFor(model => model.Items.FirstOrDefault().Status)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Created)
+            @Html.DisplayNameFor(model => model.Items.FirstOrDefault().Created)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.UserName)
+            @Html.DisplayNameFor(model => model.Items.FirstOrDefault().UserName)
         </th>
         <th></th>
     </tr>
 
-    @foreach (var item in Model)
+    @foreach (var item in Model.Items)
     {
         <tr>
             <td>
@@ -156,11 +172,11 @@
 <div style="font-size: 25px">
     Page:
 
-    @for (int i = 1; i <= ViewBag.AllPageNumber; i++)
+    @for (int i = 1; i <= Model.ViewInfo.AllPageNumber; i++)
     {
         string sPage = i.ToString();
 
-        @Html.ActionLink(sPage + " ", "ShowAllItems", new { page = i, numberPerPage = @ViewBag.NumberPerPage, userName = @ViewBag.UserName });
+        @Html.ActionLink(sPage + " ", "ShowAllItems", new { page = i, numberPerPage = Model.ViewInfo.NumberPerPage, userName = Model.ViewInfo.UserName, orderBy = Model.ViewInfo.OrderBy, orderDirection = Model.ViewInfo.OrderDirection });
         
     }
 </div>
