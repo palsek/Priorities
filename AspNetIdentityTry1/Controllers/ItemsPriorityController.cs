@@ -136,6 +136,17 @@ namespace AspNetIdentityTry1.Controllers
                                 queryToItems = queryToItems.OrderBy(i => i.Name);
                             }
                         break;
+
+                        case "Description":
+                            if (orderDirection == "desc")
+                            {
+                                queryToItems = queryToItems.OrderByDescending(i => i.Name);
+                            }
+                            else
+                            {
+                                queryToItems = queryToItems.OrderBy(i => i.Name);
+                            }
+                        break;
                        
                         case "Status":
                             if (orderDirection == "desc")
@@ -191,6 +202,17 @@ namespace AspNetIdentityTry1.Controllers
                     switch (orderBy)
                     {
                         case "Name":
+                            if (orderDirection == "desc")
+                            {
+                                queryToItems = queryToItems.OrderByDescending(i => i.Name);
+                            }
+                            else
+                            {
+                                queryToItems = queryToItems.OrderBy(i => i.Name);
+                            }
+                            break;
+
+                        case "Description":
                             if (orderDirection == "desc")
                             {
                                 queryToItems = queryToItems.OrderByDescending(i => i.Name);
@@ -270,6 +292,17 @@ namespace AspNetIdentityTry1.Controllers
                                 }
                                 break;
 
+                            case "Description":
+                                if (orderDirection == "desc")
+                                {
+                                    queryToItems = queryToItems.OrderByDescending(i => i.Name);
+                                }
+                                else
+                                {
+                                    queryToItems = queryToItems.OrderBy(i => i.Name);
+                                }
+                                break;
+
                             case "Status":
                                 if (orderDirection == "desc")
                                 {
@@ -324,6 +357,17 @@ namespace AspNetIdentityTry1.Controllers
                         switch (orderBy)
                         {
                             case "Name":
+                                if (orderDirection == "desc")
+                                {
+                                    queryToItems = queryToItems.OrderByDescending(i => i.Name);
+                                }
+                                else
+                                {
+                                    queryToItems = queryToItems.OrderBy(i => i.Name);
+                                }
+                                break;
+
+                            case "Description":
                                 if (orderDirection == "desc")
                                 {
                                     queryToItems = queryToItems.OrderByDescending(i => i.Name);
@@ -401,6 +445,17 @@ namespace AspNetIdentityTry1.Controllers
                                 }
                                 break;
 
+                            case "Description":
+                                if (orderDirection == "desc")
+                                {
+                                    queryToItems = queryToItems.OrderByDescending(i => i.Name);
+                                }
+                                else
+                                {
+                                    queryToItems = queryToItems.OrderBy(i => i.Name);
+                                }
+                                break;
+
                             case "Status":
                                 if (orderDirection == "desc")
                                 {
@@ -454,6 +509,17 @@ namespace AspNetIdentityTry1.Controllers
                         switch (orderBy)
                         {
                             case "Name":
+                                if (orderDirection == "desc")
+                                {
+                                    queryToItems = queryToItems.OrderByDescending(i => i.Name);
+                                }
+                                else
+                                {
+                                    queryToItems = queryToItems.OrderBy(i => i.Name);
+                                }
+                                break;
+
+                            case "Description":
                                 if (orderDirection == "desc")
                                 {
                                     queryToItems = queryToItems.OrderByDescending(i => i.Name);
