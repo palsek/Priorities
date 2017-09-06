@@ -46,47 +46,54 @@ namespace AspNetIdentityTry1.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Register(RegisterModel model)
         {
-            if (!ModelState.IsValid)
+            try
             {
-               // TempData["Notification"] = "ModelState is NOT valid";
+                if (!ModelState.IsValid)
+                {
+                    // TempData["Notification"] = "ModelState is NOT valid";
 
-                return View();
+                    return View();
+                }
+
+                var user = new User()
+                {
+                    UserName = model.Email,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Position = model.Position,
+                    Email = model.Email,
+                    ParentName = User.Identity.Name
+                };
+
+                var result = userManager.Create(user, model.Password);
+                var currentUser = userManager.FindByName(user.UserName);
+
+                // available roles: Administrator, CommonUser, SuperUser
+                //var roleResult = userManager.AddToRole(currentUser.Id, "CommonUser");
+                //var roleResult = userManager.AddToRole(currentUser.Id, User.Identity.Name == "admin@admin.pl" ? "Administrator" : "CommonUser");
+
+                if (result.Succeeded)
+                {
+                    var roleResult = userManager.AddToRole(currentUser.Id, User.IsInRole("SuperUser") ? "Administrator" : "CommonUser");
+
+                    TempData["Notification"] = "New user has been added";
+
+                    // return RedirectToAction("LogIn");
+                    return RedirectToAction("ShowUserItems", "ItemsPriority");
+                }
+                else
+                {
+                    string error = result.Errors.FirstOrDefault();
+
+                    TempData["Notification"] = "Something gone wrong. " + error;
+
+                    return View();
+                }
             }
-                       
-            var user = new User()
+            catch (Exception ex)
             {
-                UserName = model.Email,
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                Position = model.Position,
-                Email = model.Email,
-                ParentName = User.Identity.Name
-            };
-                        
-            var result = userManager.Create(user, model.Password);
-            var currentUser = userManager.FindByName(user.UserName);
-            
-            // available roles: Administrator, CommonUser, SuperUser
-            //var roleResult = userManager.AddToRole(currentUser.Id, "CommonUser");
-            //var roleResult = userManager.AddToRole(currentUser.Id, User.Identity.Name == "admin@admin.pl" ? "Administrator" : "CommonUser");
-
-            if (result.Succeeded)
-            {
-                var roleResult = userManager.AddToRole(currentUser.Id, User.IsInRole("SuperUser") ? "Administrator" : "CommonUser");
-
-                TempData["Notification"] = "New user has been added";
-
-               // return RedirectToAction("LogIn");
-                return RedirectToAction("ShowUserItems", "ItemsPriority");
+                return new HttpNotFoundResult(ex.Message);
             }
-            else
-            {
-                string error = result.Errors.FirstOrDefault();                
-
-                TempData["Notification"] = "Something gone wrong. " + error;
-
-                return View();
-            }            
         }
 
         [HttpGet]
@@ -108,42 +115,55 @@ namespace AspNetIdentityTry1.Controllers
         [AllowAnonymous]
         public ActionResult LogIn(LogInModel model)
         {
-
-            if (!ModelState.IsValid)
+            try
             {
-                //TempData["Notification"] = "ModelState is NOT valid.";
+                if (!ModelState.IsValid)
+                {
+                    //TempData["Notification"] = "ModelState is NOT valid.";
 
-                return View();
+                    return View();
+                }
+
+                var user = userManager.Find(model.Email, model.Password);
+
+                if (user != null)
+                {
+                    // create identity
+                    var identity = userManager.CreateIdentity(user, DefaultAuthenticationTypes.ApplicationCookie);
+
+                    // create authentication manager;           
+                    var ctx = Request.GetOwinContext();
+                    ctx.Authentication.SignIn(identity);
+
+                    return RedirectToAction("ShowUserItems", "ItemsPriority");
+                }
+                else
+                {
+                    TempData["Notification"] = "Wrong user or password";
+                    return View();
+                }
             }
-
-            var user = userManager.Find(model.Email, model.Password);
-
-            if (user != null)
+            catch (Exception ex)
             {
-                // create identity
-                var identity = userManager.CreateIdentity(user, DefaultAuthenticationTypes.ApplicationCookie);
-
-                // create authentication manager;           
-                var ctx = Request.GetOwinContext();
-                ctx.Authentication.SignIn(identity);
-
-                return RedirectToAction("ShowUserItems", "ItemsPriority");
+                return new HttpNotFoundResult(ex.Message);
             }
-            else
-            {
-                TempData["Notification"] = "Wrong user or password";
-                return View();
-            }            
         }
 
         public ActionResult LogOut()
         {
-            var ctx = Request.GetOwinContext();
-            ctx.Authentication.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            try
+            {
+                var ctx = Request.GetOwinContext();
+                ctx.Authentication.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
 
-            TempData["Notification"] = "User has been logged out";
+                TempData["Notification"] = "User has been logged out";
 
-            return RedirectToAction("LogIn");
+                return RedirectToAction("LogIn");
+            }
+            catch (Exception ex)
+            {
+                return new HttpNotFoundResult(ex.Message);
+            }
         }
 
         [HttpGet]
@@ -153,54 +173,60 @@ namespace AspNetIdentityTry1.Controllers
 
             user.Email = User.Identity.Name;
             
-
             return View(user);
         }
 
         [HttpPost]
         public ActionResult ChangePassword(ChangePasswordModel model)
-        {            
-            if (!ModelState.IsValid)
+        {
+            try
             {
-                TempData["Notification"] = "Provided data are wrong.";
-                            
-                return RedirectToAction("ChangePassword");
-            }
-            else
-            {
-               // Debug.WriteLine("Auth / ChangePassword - ModelState is valid");
-               // TempData["Notification"] = "Auth / ChangePassword - ModelState is valid";
-
-                var user = userManager.Find(model.Email, model.OldPassword);
-                
-                if (user != null && model.NewPassword == model.ConfirmNewPassword)
+                if (!ModelState.IsValid)
                 {
-                    // create identity
-                    var identity = userManager.CreateIdentity(user, DefaultAuthenticationTypes.ApplicationCookie);
+                    TempData["Notification"] = "Provided data are wrong.";
 
-                    string userId = identity.GetUserId();
+                    return RedirectToAction("ChangePassword");
+                }
+                else
+                {
+                    // Debug.WriteLine("Auth / ChangePassword - ModelState is valid");
+                    // TempData["Notification"] = "Auth / ChangePassword - ModelState is valid";
 
-                    if (userId != null)
+                    var user = userManager.Find(model.Email, model.OldPassword);
+
+                    if (user != null && model.NewPassword == model.ConfirmNewPassword)
                     {
-                        IdentityResult result = userManager.ChangePassword(userId, model.OldPassword, model.NewPassword);                                                
+                        // create identity
+                        var identity = userManager.CreateIdentity(user, DefaultAuthenticationTypes.ApplicationCookie);
 
-                        if (result.Succeeded)
+                        string userId = identity.GetUserId();
+
+                        if (userId != null)
                         {
-                            TempData["Notification"] = "Password has been changed sucessfully";
-                            return RedirectToAction("ChangePassword");
-                        }
-                        else
-                        {
-                            TempData["Notification"] = "Something gone wrong with password changing";
-                            return RedirectToAction("ChangePassword");
+                            IdentityResult result = userManager.ChangePassword(userId, model.OldPassword, model.NewPassword);
+
+                            if (result.Succeeded)
+                            {
+                                TempData["Notification"] = "Password has been changed sucessfully";
+                                return RedirectToAction("ChangePassword");
+                            }
+                            else
+                            {
+                                TempData["Notification"] = "Something gone wrong with password changing";
+                                return RedirectToAction("ChangePassword");
+                            }
                         }
                     }
-                }
 
-                //return RedirectToAction("ShowUserItems", "ItemsPriority");
-                TempData["Notification"] = "Something gone wrong with password changing. Probably you provide wrong password values.";
-                return RedirectToAction("ChangePassword");
-            }            
+                    //return RedirectToAction("ShowUserItems", "ItemsPriority");
+                    TempData["Notification"] = "Something gone wrong with password changing. Probably you provide wrong password values.";
+                    return RedirectToAction("ChangePassword");
+                }
+            }
+            catch (Exception ex)
+            {
+                return new HttpNotFoundResult(ex.Message);
+            }
         }
 
         public ActionResult NotAuthorized()
@@ -212,20 +238,27 @@ namespace AspNetIdentityTry1.Controllers
         [Authorize(Roles="Administrator")]        
         public string Sample()
         {
-            var ctx = Request.GetOwinContext();
-            string userId = ctx.Authentication.User.Identity.GetUserId();
-            string userName = ctx.Authentication.User.Identity.Name;
-            
-            var user = userManager.FindById(userId);
-
-            if (user != null)
-            {                
-                return "Auth / Sample - user != null" + user.FirstName + " " + user.LastName + " " + user.Email;
-            }
-            else
+            try
             {
-                return "Auth / Sample - user == null";
-            }            
+                var ctx = Request.GetOwinContext();
+                string userId = ctx.Authentication.User.Identity.GetUserId();
+                string userName = ctx.Authentication.User.Identity.Name;
+
+                var user = userManager.FindById(userId);
+
+                if (user != null)
+                {
+                    return "Auth / Sample - user != null" + user.FirstName + " " + user.LastName + " " + user.Email;
+                }
+                else
+                {
+                    return "Auth / Sample - user == null";
+                }
+            }
+            catch (Exception ex)
+            {
+                return "something gone wrong: " + ex.Message;
+            }
         }
 
         

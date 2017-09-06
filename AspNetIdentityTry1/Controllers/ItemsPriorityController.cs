@@ -35,52 +35,73 @@ namespace AspNetIdentityTry1.Controllers
         [HttpGet]
         public ActionResult CreateNewItem()
         {
-            string parentUserName = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault().ParentName;
+            try
+            {
+                string parentUserName = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault().ParentName;
 
-            Item item = new Item() { ParentUserName = parentUserName };
+                Item item = new Item() { ParentUserName = parentUserName };
 
-            return View(item);
+                return View(item);
+            }
+            catch (Exception ex)
+            {
+                return new HttpNotFoundResult(ex.Message);
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult CreateNewItem(Item item)
         {
-            User currentUser = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
-
-            item.UserName = User.Identity.Name;
-            item.ParentUserName = currentUser.ParentName;
-            item.Created = DateTime.Now;
-            item.Status = Status.New;
-
-            if (!ModelState.IsValid)
+            try
             {
-               // TempData["Notification"] = "ModelState is NOT valid";
+                User currentUser = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
 
-                string parentUserName = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault().ParentName;
+                item.UserName = User.Identity.Name;
+                item.ParentUserName = currentUser.ParentName;
+                item.Created = DateTime.Now;
+                item.Status = Status.New;
 
-                Item item2add = new Item() { ParentUserName = parentUserName };
+                if (!ModelState.IsValid)
+                {
+                    // TempData["Notification"] = "ModelState is NOT valid";
 
-                return View(item2add);
-            }            
+                    string parentUserName = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault().ParentName;
 
-            itemsDbContext.Items.Add(item);            
-            itemsDbContext.SaveChanges();
+                    Item item2add = new Item() { ParentUserName = parentUserName };
 
-            return RedirectToAction("ShowUserItems");
+                    return View(item2add);
+                }
+
+                itemsDbContext.Items.Add(item);
+                itemsDbContext.SaveChanges();
+
+                return RedirectToAction("ShowUserItems");
+            }
+            catch (Exception ex)
+            {
+                return new HttpNotFoundResult(ex.Message);
+            }
         }
 
         [HttpGet]
         [Authorize(Roles = "Administrator")]
         public ActionResult CreateItemForUser()
         {
-            string parentUserName = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault().ParentName;
+            try
+            {
+                string parentUserName = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault().ParentName;
 
-            ViewBag.allUsersName = allUsers.Where(u => u.ParentName == User.Identity.Name).Select(u => u.UserName);            
+                ViewBag.allUsersName = allUsers.Where(u => u.ParentName == User.Identity.Name).Select(u => u.UserName);
 
-            Item item = new Item() { ParentUserName = parentUserName };
+                Item item = new Item() { ParentUserName = parentUserName };
 
-            return View(item);
+                return View(item);
+            }
+            catch(Exception ex)
+            {
+                return new HttpNotFoundResult(ex.Message);
+            }
         }
 
         [HttpPost]
@@ -88,26 +109,33 @@ namespace AspNetIdentityTry1.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult CreateItemForUser(Item item2add)
         {
-            User currentUser = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
-
-            item2add.Created = DateTime.Now;
-            item2add.Status = Status.New;
-            item2add.ParentUserName = currentUser.UserName;
-
-            if (!ModelState.IsValid)
+            try
             {
-                //TempData["Notification"] = "ModelState is NOT valid";
-                string parentUserName = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault().ParentName;
-                ViewBag.allUsersName = allUsers.Where(u => u.ParentName == User.Identity.Name).Select(u => u.UserName);
-                Item item = new Item() { ParentUserName = parentUserName };
+                User currentUser = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
 
-                return View(item);
+                item2add.Created = DateTime.Now;
+                item2add.Status = Status.New;
+                item2add.ParentUserName = currentUser.UserName;
+
+                if (!ModelState.IsValid)
+                {
+                    //TempData["Notification"] = "ModelState is NOT valid";
+                    string parentUserName = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault().ParentName;
+                    ViewBag.allUsersName = allUsers.Where(u => u.ParentName == User.Identity.Name).Select(u => u.UserName);
+                    Item item = new Item() { ParentUserName = parentUserName };
+
+                    return View(item);
+                }
+
+                itemsDbContext.Items.Add(item2add);
+                itemsDbContext.SaveChanges();
+
+                return RedirectToAction("ShowAllItems", "ItemsPriority");
             }
-
-            itemsDbContext.Items.Add(item2add);
-            itemsDbContext.SaveChanges();
-
-            return RedirectToAction("ShowAllItems", "ItemsPriority");
+            catch (Exception ex)
+            {
+                return new HttpNotFoundResult(ex.Message);
+            }
         }
 
         //=================================================== READ =============================================================
@@ -601,97 +629,111 @@ namespace AspNetIdentityTry1.Controllers
         [HttpGet]
         public ActionResult ShowUserItems(int page = 1, int numberPerPage = 20, string orderBy = "Priority", string orderDirection = "desc")
         {
-            string userName = User.Identity.Name;
-            ViewBag.InvokingAction = "ShowUserItems";
-                      
-            // --------------------------------------- Calculate pagination------------------------------------------
-            int allItemsNumber = itemsDbContext.Items
-                                                    .Where(i => i.UserName == userName && (i.Status == Status.New || i.Status == Status.InProgress))
-                                                    .Count();
-
-            if (numberPerPage <= 0)
+            try
             {
-                numberPerPage = 20;
-            }
+                string userName = User.Identity.Name;
+                ViewBag.InvokingAction = "ShowUserItems";
 
-            int allPageNumber = allItemsNumber / numberPerPage;
-            int modulo = allItemsNumber % numberPerPage;
+                // --------------------------------------- Calculate pagination------------------------------------------
+                int allItemsNumber = itemsDbContext.Items
+                                                        .Where(i => i.UserName == userName && (i.Status == Status.New || i.Status == Status.InProgress))
+                                                        .Count();
 
-            if (allPageNumber == 0 || modulo > 0)
-            {
-                allPageNumber++;
-            }
-            
-            //------------------------------ WYCIAGNIECIE LOGIKI DO OSOBNEJ FUNKCJI ----------------------------------------------
-            List<Item> currentItems = GetData(userName, page, numberPerPage, allPageNumber, allItemsNumber, "ShowUserItems", orderBy, orderDirection);
-
-            if (currentItems != null)
-            {
-                ItemsData itemsData = new ItemsData()
+                if (numberPerPage <= 0)
                 {
-                    Items = currentItems,
-                    ViewInfo = new ViewInfo() 
-                    {
-                        NumberPerPage = numberPerPage,
-                        AllPageNumber = allPageNumber,
-                        OrderBy = orderBy,
-                        OrderDirection = orderDirection
-                    }
-                };                
+                    numberPerPage = 20;
+                }
 
-                return View(itemsData);
+                int allPageNumber = allItemsNumber / numberPerPage;
+                int modulo = allItemsNumber % numberPerPage;
+
+                if (allPageNumber == 0 || modulo > 0)
+                {
+                    allPageNumber++;
+                }
+
+                //------------------------------ WYCIAGNIECIE LOGIKI DO OSOBNEJ FUNKCJI ----------------------------------------------
+                List<Item> currentItems = GetData(userName, page, numberPerPage, allPageNumber, allItemsNumber, "ShowUserItems", orderBy, orderDirection);
+
+                if (currentItems != null)
+                {
+                    ItemsData itemsData = new ItemsData()
+                    {
+                        Items = currentItems,
+                        ViewInfo = new ViewInfo()
+                        {
+                            NumberPerPage = numberPerPage,
+                            AllPageNumber = allPageNumber,
+                            OrderBy = orderBy,
+                            OrderDirection = orderDirection
+                        }
+                    };
+
+                    return View(itemsData);
+                }
+                else
+                {
+                    return new HttpNotFoundResult("Not found");
+                }
             }
-            else
+            catch(Exception ex)
             {
-                return new HttpNotFoundResult("Not found");
+                return new HttpNotFoundResult(ex.Message);
             }
         }
 
         [HttpGet]
         public ActionResult ShowOldUserItems(int page = 1, int numberPerPage = 20, string orderBy = "Priority", string orderDirection = "desc")
-        {           
-            string userName = User.Identity.Name;
-                       
-            ViewBag.InvokingAction = "ShowOldUserItems";
-
-            int allItemsNumber = itemsDbContext.Items
-                                                    .Where(i => i.UserName == userName && i.Status == Status.Done).Count();
-
-            if (numberPerPage <= 0)
+        {
+            try
             {
-                numberPerPage = 20;
-            }
+                string userName = User.Identity.Name;
 
-            int allPageNumber = allItemsNumber / numberPerPage;
-            int modulo = allItemsNumber % numberPerPage;
+                ViewBag.InvokingAction = "ShowOldUserItems";
 
+                int allItemsNumber = itemsDbContext.Items
+                                                        .Where(i => i.UserName == userName && i.Status == Status.Done).Count();
 
-            if (allPageNumber == 0 || modulo > 0)
-            {
-                allPageNumber++;
-            }
-                      
-            List<Item> currentItems = GetData(userName, page, numberPerPage, allPageNumber, allItemsNumber, "ShowOldUserItems", orderBy, orderDirection);
-
-            if (currentItems != null)
-            {
-                ItemsData itemsData = new ItemsData()
+                if (numberPerPage <= 0)
                 {
-                    Items = currentItems,
-                    ViewInfo = new ViewInfo() 
-                    { 
-                        NumberPerPage = numberPerPage,
-                        AllPageNumber = allPageNumber,
-                        OrderBy = orderBy,
-                        OrderDirection = orderDirection
-                    }
-                };
-                
-                return View("ShowUserItems", itemsData);
+                    numberPerPage = 20;
+                }
+
+                int allPageNumber = allItemsNumber / numberPerPage;
+                int modulo = allItemsNumber % numberPerPage;
+
+
+                if (allPageNumber == 0 || modulo > 0)
+                {
+                    allPageNumber++;
+                }
+
+                List<Item> currentItems = GetData(userName, page, numberPerPage, allPageNumber, allItemsNumber, "ShowOldUserItems", orderBy, orderDirection);
+
+                if (currentItems != null)
+                {
+                    ItemsData itemsData = new ItemsData()
+                    {
+                        Items = currentItems,
+                        ViewInfo = new ViewInfo()
+                        {
+                            NumberPerPage = numberPerPage,
+                            AllPageNumber = allPageNumber,
+                            OrderBy = orderBy,
+                            OrderDirection = orderDirection
+                        }
+                    };
+
+                    return View("ShowUserItems", itemsData);
+                }
+                else
+                {
+                    return new HttpNotFoundResult("Not found");
+                }
             }
-            else
+            catch(Exception ex)
             {
-                return new HttpNotFoundResult("Not found");
+                return new HttpNotFoundResult(ex.Message);
             }
         }
 
@@ -699,63 +741,70 @@ namespace AspNetIdentityTry1.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult ShowAllItems(string userName = "", int page = 1, int numberPerPage = 20, string orderBy = "Priority", string orderDirection = "desc")
         {
-            User currentUser = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault() as User;
-
-            ViewBag.InvokingAction = "ShowAllItems";          
-
-            int allItemsNumber;
-
-            if (userName == "" || userName == "All")
+            try
             {
-                allItemsNumber = itemsDbContext.Items
-                                                    .Where(i => i.Status == Status.New || i.Status == Status.InProgress)
-                                                    .Where(i => i.ParentUserName == currentUser.UserName)
-                                                    .Count();
-            }
-            else
-            {
-                allItemsNumber = itemsDbContext.Items
-                                                    .Where(i => (i.Status == Status.New || i.Status == Status.InProgress) && i.UserName == userName).Count();
-            }
+                User currentUser = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault() as User;
 
-            if (numberPerPage <= 0)
-            {
-                numberPerPage = 20;
-            }
+                ViewBag.InvokingAction = "ShowAllItems";
 
-            int allPageNumber = allItemsNumber / numberPerPage;
-            int modulo = allItemsNumber % numberPerPage;
+                int allItemsNumber;
 
-            if (allPageNumber == 0 || modulo > 0)
-            {
-                allPageNumber++;
-            }
-
-            List<Item> currentItems = GetData(userName, page, numberPerPage, allPageNumber, allItemsNumber, "ShowAllItems", orderBy, orderDirection)
-                .Where(i => i.ParentUserName == currentUser.UserName).ToList()
-                ;
-
-            if (currentItems != null)
-            {
-                ItemsData itemsData = new ItemsData()
+                if (userName == "" || userName == "All")
                 {
-                    Items = currentItems,
-                    ViewInfo = new ViewInfo() 
-                    { 
-                        AllUsersName = allUsers.Where(u => u.ParentName == currentUser.UserName).Select(u => u.UserName).ToList<string>(),
-                        UserName = userName,
-                        NumberPerPage = numberPerPage,
-                        AllPageNumber = allPageNumber,
-                        OrderBy = orderBy,
-                        OrderDirection = orderDirection
-                    }
-                };
-                
-                return View(itemsData);
+                    allItemsNumber = itemsDbContext.Items
+                                                        .Where(i => i.Status == Status.New || i.Status == Status.InProgress)
+                                                        .Where(i => i.ParentUserName == currentUser.UserName)
+                                                        .Count();
+                }
+                else
+                {
+                    allItemsNumber = itemsDbContext.Items
+                                                        .Where(i => (i.Status == Status.New || i.Status == Status.InProgress) && i.UserName == userName).Count();
+                }
+
+                if (numberPerPage <= 0)
+                {
+                    numberPerPage = 20;
+                }
+
+                int allPageNumber = allItemsNumber / numberPerPage;
+                int modulo = allItemsNumber % numberPerPage;
+
+                if (allPageNumber == 0 || modulo > 0)
+                {
+                    allPageNumber++;
+                }
+
+                List<Item> currentItems = GetData(userName, page, numberPerPage, allPageNumber, allItemsNumber, "ShowAllItems", orderBy, orderDirection)
+                    .Where(i => i.ParentUserName == currentUser.UserName).ToList()
+                    ;
+
+                if (currentItems != null)
+                {
+                    ItemsData itemsData = new ItemsData()
+                    {
+                        Items = currentItems,
+                        ViewInfo = new ViewInfo()
+                        {
+                            AllUsersName = allUsers.Where(u => u.ParentName == currentUser.UserName).Select(u => u.UserName).ToList<string>(),
+                            UserName = userName,
+                            NumberPerPage = numberPerPage,
+                            AllPageNumber = allPageNumber,
+                            OrderBy = orderBy,
+                            OrderDirection = orderDirection
+                        }
+                    };
+
+                    return View(itemsData);
+                }
+                else
+                {
+                    return new HttpNotFoundResult("Not found");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return new HttpNotFoundResult("Not found");
+                return new HttpNotFoundResult(ex.Message);
             }
         }
 
@@ -763,65 +812,71 @@ namespace AspNetIdentityTry1.Controllers
         [Authorize(Roles = "Administrator")]
         public ActionResult ShowAllOldItems(string userName = "", int page = 1, int numberPerPage = 20, string orderBy = "Priority", string orderDirection = "desc")
         {
-            User currentUser = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault() as User;
-
-            ViewBag.InvokingAction = "ShowAllOldItems";
-
-            int allItemsNumber;
-
-            if (userName == "" || userName == "All")
+            try
             {
-                allItemsNumber = itemsDbContext.Items
-                                                    .Where(i => i.Status == Status.Done)
-                                                    .Where(i => i.ParentUserName == currentUser.UserName)
-                                                    .Count();
-            }
-            else
-            {
-                allItemsNumber = itemsDbContext.Items
-                                                    .Where(i => i.Status == Status.Done && i.UserName == userName).Count();
-            }
+                User currentUser = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault() as User;
 
-            if (numberPerPage <= 0)
-            {
-                numberPerPage = 20;
-            }
+                ViewBag.InvokingAction = "ShowAllOldItems";
 
-            int allPageNumber = allItemsNumber / numberPerPage;
-            int modulo = allItemsNumber % numberPerPage;
+                int allItemsNumber;
 
-            if (allPageNumber == 0 || modulo > 0)
-            {
-                allPageNumber++;
-            }
-                       
-            List<Item> currentItems = GetData(userName, page, numberPerPage, allPageNumber, allItemsNumber, "ShowAllOldItems", orderBy, orderDirection)
-                .Where(i => i.ParentUserName == currentUser.UserName).ToList()
-                ;
-
-            if (currentItems != null)
-            {
-                ItemsData itemsData = new ItemsData()
+                if (userName == "" || userName == "All")
                 {
-                    Items = currentItems,
-                    ViewInfo = new ViewInfo() 
+                    allItemsNumber = itemsDbContext.Items
+                                                        .Where(i => i.Status == Status.Done)
+                                                        .Where(i => i.ParentUserName == currentUser.UserName)
+                                                        .Count();
+                }
+                else
+                {
+                    allItemsNumber = itemsDbContext.Items
+                                                        .Where(i => i.Status == Status.Done && i.UserName == userName).Count();
+                }
+
+                if (numberPerPage <= 0)
+                {
+                    numberPerPage = 20;
+                }
+
+                int allPageNumber = allItemsNumber / numberPerPage;
+                int modulo = allItemsNumber % numberPerPage;
+
+                if (allPageNumber == 0 || modulo > 0)
+                {
+                    allPageNumber++;
+                }
+
+                List<Item> currentItems = GetData(userName, page, numberPerPage, allPageNumber, allItemsNumber, "ShowAllOldItems", orderBy, orderDirection)
+                    .Where(i => i.ParentUserName == currentUser.UserName).ToList()
+                    ;
+
+                if (currentItems != null)
+                {
+                    ItemsData itemsData = new ItemsData()
                     {
-                        AllUsersName = allUsers.Where(u => u.ParentName == currentUser.UserName).Select(u => u.UserName).ToList<string>(),
-                        UserName = userName,
-                        NumberPerPage = numberPerPage,
-                        AllPageNumber = allPageNumber,
-                        OrderBy = orderBy,
-                        OrderDirection = orderDirection
-                    }
-                };
+                        Items = currentItems,
+                        ViewInfo = new ViewInfo()
+                        {
+                            AllUsersName = allUsers.Where(u => u.ParentName == currentUser.UserName).Select(u => u.UserName).ToList<string>(),
+                            UserName = userName,
+                            NumberPerPage = numberPerPage,
+                            AllPageNumber = allPageNumber,
+                            OrderBy = orderBy,
+                            OrderDirection = orderDirection
+                        }
+                    };
 
-                return View(itemsData);
+                    return View(itemsData);
+                }
+                else
+                {
+                    return new HttpNotFoundResult("Not found");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return new HttpNotFoundResult("Not found");
+                return new HttpNotFoundResult(ex.Message);
             }
-
         }
 
         //=================================================== UPDATE =============================================================
@@ -829,67 +884,81 @@ namespace AspNetIdentityTry1.Controllers
         [HttpGet]
         public ActionResult EditItem(int Id, string invokingViewAction = null)
         {
-            string parentUserName = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault().ParentName;
-
-            List<string> allCurrentUsersNames = new List<string>();
-
-            if (User.IsInRole("Administrator"))
-            {                
-                allCurrentUsersNames = allUsers.Where(u => u.ParentName == User.Identity.Name).Select(u => u.UserName).ToList();
-                allCurrentUsersNames.Add(User.Identity.Name);
-            }
-            else
+            try
             {
-                allCurrentUsersNames.Add(User.Identity.Name);
+                string parentUserName = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault().ParentName;
+
+                List<string> allCurrentUsersNames = new List<string>();
+
+                if (User.IsInRole("Administrator"))
+                {
+                    allCurrentUsersNames = allUsers.Where(u => u.ParentName == User.Identity.Name).Select(u => u.UserName).ToList();
+                    allCurrentUsersNames.Add(User.Identity.Name);
+                }
+                else
+                {
+                    allCurrentUsersNames.Add(User.Identity.Name);
+                }
+
+                ViewBag.allUsersName = allCurrentUsersNames;
+
+                Item item = itemsDbContext.Items.Where(i => i.Id == Id).FirstOrDefault();
+
+                if (item != null)
+                {
+                    item.InvokingViewAction = invokingViewAction;
+
+                    return View(item);
+                }
+
+                return View();
             }
-
-            ViewBag.allUsersName = allCurrentUsersNames;
-
-            Item item = itemsDbContext.Items.Where(i => i.Id == Id).FirstOrDefault();
-
-            if (item != null)
+            catch(Exception ex)
             {
-                item.InvokingViewAction = invokingViewAction;
-
-                return View(item);
+                return new HttpNotFoundResult(ex.Message);
             }
-
-            return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult EditItem(Item item2edit)
-        {           
-            string parentUserName = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault().ParentName;
-
-            List<string> allCurrentUsersNames = new List<string>();
-
-            if (User.IsInRole("Administrator"))
+        {
+            try
             {
-                allCurrentUsersNames = allUsers.Where(u => u.ParentName == User.Identity.Name).Select(u => u.UserName).ToList();
-                allCurrentUsersNames.Add(User.Identity.Name);
+                string parentUserName = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault().ParentName;
+
+                List<string> allCurrentUsersNames = new List<string>();
+
+                if (User.IsInRole("Administrator"))
+                {
+                    allCurrentUsersNames = allUsers.Where(u => u.ParentName == User.Identity.Name).Select(u => u.UserName).ToList();
+                    allCurrentUsersNames.Add(User.Identity.Name);
+                }
+                else
+                {
+                    allCurrentUsersNames.Add(User.Identity.Name);
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    //TempData["Notification"] = "ModelState is NOT valid";
+                    ViewBag.allUsersName = allCurrentUsersNames;
+
+                    Item item = new Item() { ParentUserName = parentUserName };
+
+                    return View(item);
+                }
+
+                itemsDbContext.Items.Attach(item2edit);
+                itemsDbContext.Entry(item2edit).State = EntityState.Modified;
+                itemsDbContext.SaveChanges();
+
+                return RedirectToAction(item2edit.InvokingViewAction == null ? "ShowUserItems" : item2edit.InvokingViewAction);
             }
-            else
+            catch(Exception ex)
             {
-                allCurrentUsersNames.Add(User.Identity.Name);
+                return new HttpNotFoundResult(ex.Message);
             }
-
-            if (!ModelState.IsValid)
-            {
-                //TempData["Notification"] = "ModelState is NOT valid";
-                ViewBag.allUsersName = allCurrentUsersNames;
-
-                Item item = new Item() { ParentUserName = parentUserName };
-
-                return View(item);
-            }
-
-            itemsDbContext.Items.Attach(item2edit);
-            itemsDbContext.Entry(item2edit).State = EntityState.Modified;
-            itemsDbContext.SaveChanges();
-
-            return RedirectToAction(item2edit.InvokingViewAction == null ? "ShowUserItems" : item2edit.InvokingViewAction);
         }
 
         //=================================================== DELETE =============================================================
@@ -897,28 +966,42 @@ namespace AspNetIdentityTry1.Controllers
         [HttpGet]
         public ActionResult DeleteItem(int Id)
         {
-            Item item2delete = itemsDbContext.Items.Where(i => i.Id == Id).FirstOrDefault();
-
-            if (item2delete != null)
+            try
             {
-                return View(item2delete);
+                Item item2delete = itemsDbContext.Items.Where(i => i.Id == Id).FirstOrDefault();
+
+                if (item2delete != null)
+                {
+                    return View(item2delete);
+                }
+                return new HttpNotFoundResult();
             }
-            return null;
+            catch (Exception ex)
+            {
+                return new HttpNotFoundResult(ex.Message);
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteItem(Item item2delete)
         {
-            Item item2del = itemsDbContext.Items.Where(i => i.Id == item2delete.Id).FirstOrDefault();
-
-            if(item2delete != null)
+            try
             {
-                itemsDbContext.Items.Remove(item2del);
-                itemsDbContext.SaveChanges();
-            }
+                Item item2del = itemsDbContext.Items.Where(i => i.Id == item2delete.Id).FirstOrDefault();
 
-            return RedirectToAction("ShowUserItems");
+                if (item2delete != null)
+                {
+                    itemsDbContext.Items.Remove(item2del);
+                    itemsDbContext.SaveChanges();
+                }
+
+                return RedirectToAction("ShowUserItems");
+            }
+            catch (Exception ex)
+            {
+                return new HttpNotFoundResult(ex.Message);
+            }
         }
 
 
