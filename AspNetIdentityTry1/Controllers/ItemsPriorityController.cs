@@ -639,7 +639,7 @@ namespace AspNetIdentityTry1.Controllers
                                                         .Where(i => i.UserName == userName && (i.Status == Status.New || i.Status == Status.InProgress))
                                                         .Count();
 
-                if (numberPerPage <= 0)
+                if (numberPerPage <= 0 || numberPerPage > 999)
                 {
                     numberPerPage = 20;
                 }
@@ -694,7 +694,7 @@ namespace AspNetIdentityTry1.Controllers
                 int allItemsNumber = itemsDbContext.Items
                                                         .Where(i => i.UserName == userName && i.Status == Status.Done).Count();
 
-                if (numberPerPage <= 0)
+                if (numberPerPage <= 0 || numberPerPage > 999)
                 {
                     numberPerPage = 20;
                 }
@@ -762,7 +762,7 @@ namespace AspNetIdentityTry1.Controllers
                                                         .Where(i => (i.Status == Status.New || i.Status == Status.InProgress) && i.UserName == userName).Count();
                 }
 
-                if (numberPerPage <= 0)
+                if (numberPerPage <= 0 || numberPerPage > 999)
                 {
                     numberPerPage = 20;
                 }
