@@ -26,25 +26,11 @@
     <h4 style="color: red">@TempData["Notification"]</h4>
 }
 
-@using (Html.BeginForm())
-{ 
-   // @Html.HiddenFor(m => m.UserName)
-
-    <div class="form-group">
-        <div>
-            @*@Html.LabelFor(model => model.UserName, htmlAttributes: new { @class = "control-label col-md-2" })*@
-            @Html.LabelFor(model => model.UserName)
-        </div>
-        <!--<div class="col-md-10">-->            
-        <div>
-            @Html.DropDownListFor(model => model.UserName, listUsersName)
-            @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
-        </div>
-        <div style="margin: 5px">
-            @*<button type="submit" class="btn btn-default">Are you sure to delete @User.Identity.Name user?</button>*@
-            <button type="submit" class="btn btn-default">Delete user</button>
-        </div>
+<form action="/Auth/DeleteUser" method="post" onsubmit="if (!confirm('Are you sure you want to delete this account?')) { return false; }">
+    <div class="form-group form-inline">
+        @Html.LabelFor(model => model.UserName)
+        @Html.DropDownListFor(model => model.UserName, listUsersName, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
+        <button type="submit" class="btn btn-default">Delete user</button>
     </div>
-
-    
-}
+</form>

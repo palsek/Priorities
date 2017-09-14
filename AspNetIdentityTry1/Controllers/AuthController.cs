@@ -269,7 +269,7 @@ namespace AspNetIdentityTry1.Controllers
         {
             AppDbContext userDbContext = new AppDbContext();
                        
-            ViewBag.allUsersName = userDbContext.Users.Where(u => u.ParentName == User.Identity.Name).Select(u => u.UserName);
+            ViewBag.allUsersName = userDbContext.Users.Where(u => u.ParentName == User.Identity.Name).OrderBy(u => u.UserName).Select(u => u.UserName);
 
             User appUser = userManager.FindByName(User.Identity.Name);
 

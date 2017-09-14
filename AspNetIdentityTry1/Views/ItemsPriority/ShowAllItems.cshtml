@@ -68,14 +68,14 @@
 
 <div style="float: right">
     <div>
-        <form action="/ItemsPriority/ShowAllItems" method="get">
-            Order by:
-            @Html.DropDownList("orderBy", orderByList)
-            @Html.DropDownList("orderDirection", orderDirection)
-            Number per page:
-            @Html.TextBox("numberPerPage", 20, new { style = "width:30px", @maxlength = "3" })
-            User:
-            @Html.DropDownList("userName", userList)
+        <form action="/ItemsPriority/ShowAllItems" method="get" class="form-inline">
+            <p style="display: inline; font-weight: bolder">Order by:</p>
+            @Html.DropDownList("orderBy", orderByList, new { @class = "form-control", style = "width:100px" })
+            @Html.DropDownList("orderDirection", orderDirection, new { @class = "form-control", style = "width:130px" })
+            <p style="display: inline; font-weight: bolder">Number per page:</p>
+            @Html.TextBox("numberPerPage", 20, new { style = "width:50px", @maxlength = "3", @class = "form-control"})
+            <p style="display: inline; font-weight: bolder">User:</p>
+            @Html.DropDownList("userName", userList, new { @class = "form-control", style = "max-width:160px" })
             <input type="submit" value="Apply" class="btn btn-default" />
         </form>
     </div>
