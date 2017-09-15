@@ -267,9 +267,7 @@ namespace AspNetIdentityTry1.Controllers
         [Authorize(Roles = "Administrator, SuperUser")]
         public ActionResult DeleteUser()
         {
-            AppDbContext userDbContext = new AppDbContext();
-                       
-            ViewBag.allUsersName = userDbContext.Users.Where(u => u.ParentName == User.Identity.Name).OrderBy(u => u.UserName).Select(u => u.UserName);
+            ViewBag.allUsersName = dbContext.Users.Where(u => u.ParentName == User.Identity.Name).OrderBy(u => u.UserName).Select(u => u.UserName);
 
             User appUser = userManager.FindByName(User.Identity.Name);
 
@@ -278,7 +276,6 @@ namespace AspNetIdentityTry1.Controllers
                 Debug.WriteLine("appUser.UserName: {0}, appUser.FirstName: {1}, appUser.LastName: {2}", appUser.UserName, appUser.FirstName, appUser.LastName);
             }
 
-            //return View(appUser);
             return View();
         }
 
@@ -288,12 +285,10 @@ namespace AspNetIdentityTry1.Controllers
         {
             if (!ModelState.IsValid)
             {
-                AppDbContext userDbContext = new AppDbContext();
-                ViewBag.allUsersName = userDbContext.Users.Where(u => u.ParentName == User.Identity.Name).Select(u => u.UserName);
+                ViewBag.allUsersName = dbContext.Users.Where(u => u.ParentName == User.Identity.Name).Select(u => u.UserName);
 
                 return View();
-            }
-            
+            }            
 
             var userToDelete = userManager.FindByName(model.UserName);
 
@@ -406,6 +401,13 @@ namespace AspNetIdentityTry1.Controllers
                 return "Something gone wrong.";
             }
 
+        }
+
+        public PartialViewResult GetUserInfo(string userName)
+        {            
+            User user = dbContext.Users.Where(u => u.UserName == userName).FirstOrDefault();
+
+            return PartialView(user);
         }
 
     }

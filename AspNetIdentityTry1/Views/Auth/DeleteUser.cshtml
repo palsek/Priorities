@@ -26,11 +26,41 @@
     <h4 style="color: red">@TempData["Notification"]</h4>
 }
 
-<form action="/Auth/DeleteUser" method="post" onsubmit="if (!confirm('Are you sure you want to delete this account?')) { return false; }">
-    <div class="form-group form-inline">
-        @Html.LabelFor(model => model.UserName)
-        @Html.DropDownListFor(model => model.UserName, listUsersName, new { @class = "form-control" })
+<form action="/Auth/DeleteUser" method="post" onsubmit="if (!confirm('Are you sure you want to delete this account?')) { return false; }" class="form-inline form-horizontal">
+    <div @*class="form-group form-inline"*@>
+        @Html.LabelFor(model => model.UserName, htmlAttributes: new { @class = "control-label col-md-2" })
+        @Html.DropDownListFor(model => model.UserName, listUsersName, new { @class = "form-control", onchange = "console.log('log do konsoli')", id = "usersDropDownList" })
         @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
         <button type="submit" class="btn btn-default">Delete user</button>
     </div>
 </form>
+<br/>
+<div id="userDetails" class="form-horizontal" @*style="float:  left; text-align:   left"*@ />
+
+@*<div>
+    Sample div
+</div>*@
+
+<script>
+    $(document).ready(function () {
+        GetUserData();
+        $('#usersDropDownList').change(function () {
+            GetUserData();
+        });
+    });
+
+    function GetUserData()
+    {
+        var strSelected = "";
+
+        $('#usersDropDownList option:selected').each(function () {
+            strSelected += $(this)[0].value;
+        });
+            
+        var url = "/Auth/GetUserInfo?userName=" + strSelected;
+
+        $.post(url, function (data) {
+            $('#userDetails').html(data);
+        });
+    }
+</script>

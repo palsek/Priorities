@@ -191,6 +191,7 @@
     <Content Include="Views\ItemsPriority\ShowAllItems.cshtml" />
     <Content Include="Views\ItemsPriority\CreateItemForUser.cshtml" />
     <Content Include="Views\ItemsPriority\ShowAllOldItems.cshtml" />
+    <Content Include="Views\Auth\GetUserInfo.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
