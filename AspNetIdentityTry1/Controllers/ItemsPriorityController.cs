@@ -664,6 +664,7 @@ namespace AspNetIdentityTry1.Controllers
                         Items = currentItems,
                         ViewInfo = new ViewInfo()
                         {
+                            Page = page,
                             NumberPerPage = numberPerPage,
                             AllPageNumber = allPageNumber,
                             OrderBy = orderBy,
@@ -723,6 +724,7 @@ namespace AspNetIdentityTry1.Controllers
                         Items = currentItems,
                         ViewInfo = new ViewInfo()
                         {
+                            Page = page,
                             NumberPerPage = numberPerPage,
                             AllPageNumber = allPageNumber,
                             OrderBy = orderBy,
@@ -795,6 +797,7 @@ namespace AspNetIdentityTry1.Controllers
                         {
                             AllUsersName = allUsers.Where(u => u.ParentName == currentUser.UserName).Select(u => u.UserName).ToList<string>(),
                             UserName = userName,
+                            Page = page,
                             NumberPerPage = numberPerPage,
                             AllPageNumber = allPageNumber,
                             OrderBy = orderBy,
@@ -867,6 +870,7 @@ namespace AspNetIdentityTry1.Controllers
                         {
                             AllUsersName = allUsers.Where(u => u.ParentName == currentUser.UserName).Select(u => u.UserName).ToList<string>(),
                             UserName = userName,
+                            Page = page,
                             NumberPerPage = numberPerPage,
                             AllPageNumber = allPageNumber,
                             OrderBy = orderBy,

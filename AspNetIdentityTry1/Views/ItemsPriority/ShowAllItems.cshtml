@@ -176,7 +176,22 @@
     {
         string sPage = i.ToString();
 
-        @Html.ActionLink(sPage + " ", "ShowAllItems", new { page = i, numberPerPage = Model.ViewInfo.NumberPerPage, userName = Model.ViewInfo.UserName, orderBy = Model.ViewInfo.OrderBy, orderDirection = Model.ViewInfo.OrderDirection });
-        
+        if (Model.ViewInfo.Page != null)
+        {
+            if (Model.ViewInfo.Page == i)
+            {
+                <b>
+                    @Html.ActionLink(sPage + " ", "ShowAllItems", new { page = i, numberPerPage = Model.ViewInfo.NumberPerPage, userName = Model.ViewInfo.UserName, orderBy = Model.ViewInfo.OrderBy, orderDirection = Model.ViewInfo.OrderDirection })
+                </b>
+            }
+            else
+            {
+                @Html.ActionLink(sPage + " ", "ShowAllItems", new { page = i, numberPerPage = Model.ViewInfo.NumberPerPage, userName = Model.ViewInfo.UserName, orderBy = Model.ViewInfo.OrderBy, orderDirection = Model.ViewInfo.OrderDirection })
+            }
+        }
+        else
+        {
+            @Html.ActionLink(sPage + " ", "ShowAllItems", new { page = i, numberPerPage = Model.ViewInfo.NumberPerPage, userName = Model.ViewInfo.UserName, orderBy = Model.ViewInfo.OrderBy, orderDirection = Model.ViewInfo.OrderDirection })
+        }
     }
 </div>

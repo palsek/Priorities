@@ -161,13 +161,29 @@ else
 
 </table>
 
-<div style="font-size: 25px">    
+<div style="font-size: 25px">
     Page: 
 
     @for (int i = 1; i <= Model.ViewInfo.AllPageNumber; i++)
     {
         string sPage = i.ToString();
-                
-        @Html.ActionLink(sPage + " ", invokingAction, new { page = i, numberPerPage = Model.ViewInfo.NumberPerPage, orderBy = Model.ViewInfo.OrderBy, orderDirection = Model.ViewInfo.OrderDirection });        
-    }        
+
+        if (Model.ViewInfo.Page != null)
+        {
+            if (Model.ViewInfo.Page == i)
+            {
+                <b>
+                    @Html.ActionLink(sPage + " ", invokingAction, new { page = i, numberPerPage = Model.ViewInfo.NumberPerPage, orderBy = Model.ViewInfo.OrderBy, orderDirection = Model.ViewInfo.OrderDirection })
+                </b>
+            }
+            else
+            {
+                @Html.ActionLink(sPage + " ", invokingAction, new { page = i, numberPerPage = Model.ViewInfo.NumberPerPage, orderBy = Model.ViewInfo.OrderBy, orderDirection = Model.ViewInfo.OrderDirection })
+            }
+        }
+        else
+        {
+            @Html.ActionLink(sPage + " ", invokingAction, new { page = i, numberPerPage = Model.ViewInfo.NumberPerPage, orderBy = Model.ViewInfo.OrderBy, orderDirection = Model.ViewInfo.OrderDirection })
+        }
+    }
 </div>
