@@ -146,9 +146,15 @@ else
         <td>
             @Html.DisplayFor(modelItem => item.Created)
         </td>        
-        <td>
-            @Html.ActionLink("Edit", "EditItem", new { id = item.Id, invokingViewAction = ViewBag.InvokingAction }) |           
-            @Html.ActionLink("Delete", "DeleteItem", new { id=item.Id })
+        <td>            
+            @Html.ActionLink("Edit", "EditItem", new { id = item.Id, invokingViewAction = ViewBag.InvokingAction })    
+            @if(Model.Setup != null)
+            {      
+                if (Model.Setup.AllowUserChangeItem || User.IsInRole("Administrator"))
+                { 
+                   @Html.ActionLink("Delete", "DeleteItem", new { id=item.Id })
+                }
+            }
         </td>
     </tr>
 }

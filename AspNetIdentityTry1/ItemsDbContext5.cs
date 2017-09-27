@@ -13,9 +13,8 @@ namespace AspNetIdentityTry1
             : base("name=ItemsStoreConnection5")
         {
         }
-
-
-
+        
         public DbSet<Item> Items { get; set; }
+        public DbSet<Setup> Setups { get; set; }
     }
 }

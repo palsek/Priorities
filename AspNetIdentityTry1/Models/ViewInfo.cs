@@ -11,10 +11,12 @@ namespace AspNetIdentityTry1.Models
         public int NumberPerPage { get; set; }
         public int AllPageNumber { get; set; }
         public string OrderBy { get; set; }
-        public string OrderDirection { get; set; }        
+        public string OrderDirection { get; set; }
+        public string InvokingViewAction { get; set; }
 
         // for admin functionality
         public List<string> AllUsersName { get; set; }
-        public string UserName { get; set; }
+        public string UserName { get; set; }       
+        //public List<string> AllCurrentUserNames { get; set; }
     }
 }

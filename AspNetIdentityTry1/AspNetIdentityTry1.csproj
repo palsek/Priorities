@@ -149,6 +149,7 @@
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ItemsPriorityController.cs" />
+    <Compile Include="Controllers\SetupController.cs" />
     <Compile Include="FilterConfig.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -163,12 +164,17 @@
     <Compile Include="Migrations\201708161217574_parentNames.Designer.cs">
       <DependentUpon>201708161217574_parentNames.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201709250846267_addSetup.cs" />
+    <Compile Include="Migrations\201709250846267_addSetup.Designer.cs">
+      <DependentUpon>201709250846267_addSetup.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ChangePasswordModel.cs" />
     <Compile Include="Models\Item.cs" />
     <Compile Include="Models\ItemsData.cs" />
     <Compile Include="Models\LogInModel.cs" />
     <Compile Include="Models\RegisterModel.cs" />
+    <Compile Include="Models\Setup.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\ViewInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -192,6 +198,7 @@
     <Content Include="Views\ItemsPriority\CreateItemForUser.cshtml" />
     <Content Include="Views\ItemsPriority\ShowAllOldItems.cshtml" />
     <Content Include="Views\Auth\GetUserInfo.cshtml" />
+    <Content Include="Views\Setup\EditSetup.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -208,6 +215,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201708161217574_parentNames.resx">
       <DependentUpon>201708161217574_parentNames.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201709250846267_addSetup.resx">
+      <DependentUpon>201709250846267_addSetup.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

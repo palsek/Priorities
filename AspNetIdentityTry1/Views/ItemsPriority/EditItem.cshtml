@@ -1,4 +1,4 @@
-﻿@model AspNetIdentityTry1.Models.Item
+﻿@model AspNetIdentityTry1.Models.ItemsData
 
 @{
     ViewBag.Title = "EditItem";
@@ -32,9 +32,9 @@
 
     List<SelectListItem> listUsers = new List<SelectListItem>();
 
-    if (ViewBag.allUsersName != null)
+    if (Model.ViewInfo.AllUsersName != null)
     {
-        foreach (var userName in ViewBag.allUsersName)
+        foreach (var userName in Model.ViewInfo.AllUsersName)
         {
             listUsers.Add(new SelectListItem
             {
@@ -76,61 +76,105 @@
     <div class="form-horizontal">
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.Id)
+        @Html.HiddenFor(model => model.OneItem.Id)
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.OneItem.Name, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+            @if(Model.Setup != null)
+            {
+                if (Model.Setup.AllowUserChangeItem || User.IsInRole("Administrator"))
+                { 
+                    @Html.EditorFor(model => model.OneItem.Name, new { htmlAttributes = new { @class = "form-control" } })
+                }
+                else
+                { 
+                    @Html.EditorFor(model => model.OneItem.Name, new { htmlAttributes = new { @readonly = "readonly", @class = "form-control" } })
+                }
+            }
+            else
+            { 
+                @Html.EditorFor(model => model.OneItem.Name, new { htmlAttributes = new { @readonly = "readonly", @class = "form-control" } })
+            }
+                @Html.ValidationMessageFor(model => model.OneItem.Name, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.OneItem.Description, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+            @if(Model.Setup != null)
+            {
+                if (Model.Setup.AllowUserChangeItem || User.IsInRole("Administrator"))
+                {
+                    @Html.EditorFor(model => model.OneItem.Description, new { htmlAttributes = new { @class = "form-control" } })
+                }
+                else
+                { 
+                    @Html.EditorFor(model => model.OneItem.Description, new { htmlAttributes = new { @readonly = "readonly", @class = "form-control" } })
+                }
+            }
+            else
+            { 
+                @Html.EditorFor(model => model.OneItem.Name, new { htmlAttributes = new { @readonly = "readonly", @class = "form-control" } })
+            }
+                @Html.ValidationMessageFor(model => model.OneItem.Description, "", new { @class = "text-danger" })
             </div>
         </div>
         
         <div class="form-group">
-            @Html.LabelFor(model => model.Priority, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.OneItem.Priority, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.Priority, listPriorities, new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
+            @if(Model.Setup != null)
+            {
+                if (Model.Setup.AllowUserChangeItem || User.IsInRole("Administrator"))
+                {
+                    @Html.DropDownListFor(model => model.OneItem.Priority, listPriorities, new { @class = "form-control" })                
+                }
+                else
+                { 
+                    @Html.DropDownListFor(model => model.OneItem.Priority, listPriorities, new { disabled = "disabled", @class = "form-control" })
+                    @Html.HiddenFor(m => m.OneItem.Priority)
+                }
+            }
+            else
+            {
+                @Html.DropDownListFor(model => model.OneItem.Priority, listPriorities, new { disabled = "disabled", @class = "form-control" })
+                @Html.HiddenFor(m => m.OneItem.Priority)
+            }
+                @Html.ValidationMessageFor(model => model.OneItem.UserName, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.UserName, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.OneItem.UserName, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @if (User.IsInRole("Administrator") || User.IsInRole("SuperUser"))
                 {
-                    @Html.DropDownListFor(model => model.UserName, listUsers, new { @class = "form-control" })
+                    @Html.DropDownListFor(model => model.OneItem.UserName, listUsers, new { @class = "form-control" })
                 }
                 else
                 {
-                    @Html.DropDownListFor(model => model.UserName, listUsers, htmlAttributes: new { disabled = "disabled", @class = "form-control" })
+                    @Html.DropDownListFor(model => model.OneItem.UserName, listUsers, htmlAttributes: new { @readonly = "readonly", @class = "form-control" })
                 }
-                @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
+                @Html.ValidationMessageFor(model => model.OneItem.UserName, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Status, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.OneItem.Status, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.Status, listStatuses, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
+                @Html.DropDownListFor(model => model.OneItem.Status, listStatuses, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.OneItem.Status, "", new { @class = "text-danger" })
             </div>
         </div>
-
-        @Html.HiddenFor(i => i.Created)
-        @Html.HiddenFor(i => i.InvokingViewAction)
-        @Html.HiddenFor(i => i.UserName);
+                
         @if(Model != null)
         {
-            @Html.Hidden("ParentUserName", Model.ParentUserName)
+            @Html.HiddenFor(m => m.OneItem.ParentUserName)
+            @Html.HiddenFor(m => m.OneItem.Created)
+            @Html.HiddenFor(m => m.ViewInfo.InvokingViewAction)
+            @Html.HiddenFor(m => m.OneItem.UserName)
         }
         
         <div class="form-group">

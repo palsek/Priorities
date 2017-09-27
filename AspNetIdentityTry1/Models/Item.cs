@@ -29,9 +29,6 @@ namespace AspNetIdentityTry1.Models
         public Status Status { get; set; }
 
         [NotMapped]
-        public string InvokingViewAction { get; set; }
-
-        [NotMapped]
         public ViewInfo ViewInfo { get; set; }
     }
 

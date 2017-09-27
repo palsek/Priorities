@@ -655,6 +655,8 @@ namespace AspNetIdentityTry1.Controllers
                 //------------------------------ WYCIAGNIECIE LOGIKI DO OSOBNEJ FUNKCJI ----------------------------------------------
                 List<Item> currentItems = GetData(userName, page, numberPerPage, allPageNumber, allItemsNumber, "ShowUserItems", orderBy, orderDirection);
 
+                User currentUser = allUsers.Where(u => u.UserName == userName).FirstOrDefault();
+
                 if (currentItems != null)
                 {
                     ItemsData itemsData = new ItemsData()
@@ -665,10 +667,12 @@ namespace AspNetIdentityTry1.Controllers
                             NumberPerPage = numberPerPage,
                             AllPageNumber = allPageNumber,
                             OrderBy = orderBy,
-                            OrderDirection = orderDirection
-                        }
+                            OrderDirection = orderDirection,
+                            InvokingViewAction = "ShowUserItems"
+                        },
+                        Setup = GetUserSetup(currentUser)
                     };
-
+                                       
                     return View(itemsData);
                 }
                 else
@@ -710,6 +714,8 @@ namespace AspNetIdentityTry1.Controllers
 
                 List<Item> currentItems = GetData(userName, page, numberPerPage, allPageNumber, allItemsNumber, "ShowOldUserItems", orderBy, orderDirection);
 
+                User currentUser = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+
                 if (currentItems != null)
                 {
                     ItemsData itemsData = new ItemsData()
@@ -721,7 +727,8 @@ namespace AspNetIdentityTry1.Controllers
                             AllPageNumber = allPageNumber,
                             OrderBy = orderBy,
                             OrderDirection = orderDirection
-                        }
+                        },
+                        Setup = GetUserSetup(currentUser)
                     };
 
                     return View("ShowUserItems", itemsData);
@@ -791,7 +798,8 @@ namespace AspNetIdentityTry1.Controllers
                             NumberPerPage = numberPerPage,
                             AllPageNumber = allPageNumber,
                             OrderBy = orderBy,
-                            OrderDirection = orderDirection
+                            OrderDirection = orderDirection,
+                            InvokingViewAction = "ShowAllItems"
                         }
                     };
 
@@ -899,16 +907,26 @@ namespace AspNetIdentityTry1.Controllers
                 {
                     allCurrentUsersNames.Add(User.Identity.Name);
                 }
-
-                ViewBag.allUsersName = allCurrentUsersNames;
+                             
 
                 Item item = itemsDbContext.Items.Where(i => i.Id == Id).FirstOrDefault();
 
+                User currentUser = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+
                 if (item != null)
                 {
-                    item.InvokingViewAction = invokingViewAction;
+                    ItemsData itemData = new ItemsData()
+                    {
+                        OneItem = item,
+                        ViewInfo = new ViewInfo()
+                        {
+                            InvokingViewAction = invokingViewAction,
+                            AllUsersName = allCurrentUsersNames
+                        },
+                        Setup = GetUserSetup(currentUser)
+                    };
 
-                    return View(item);
+                    return View(itemData);
                 }
 
                 return View();
@@ -921,7 +939,7 @@ namespace AspNetIdentityTry1.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult EditItem(Item item2edit)
+        public ActionResult EditItem(ItemsData itemData2edit)
         {
             try
             {
@@ -941,19 +959,31 @@ namespace AspNetIdentityTry1.Controllers
 
                 if (!ModelState.IsValid)
                 {
-                    //TempData["Notification"] = "ModelState is NOT valid";
+                    TempData["Notification"] = "ModelState is NOT valid";
                     ViewBag.allUsersName = allCurrentUsersNames;
 
                     Item item = new Item() { ParentUserName = parentUserName };
 
-                    return View(item);
+                    User currentUser = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+
+                    ItemsData itemData = new ItemsData()
+                    {
+                        OneItem = item,
+                        ViewInfo = new ViewInfo()
+                        {
+                            InvokingViewAction = itemData2edit.ViewInfo.InvokingViewAction
+                        },                        
+                        Setup = GetUserSetup(currentUser)
+                    };
+
+                    return View(itemData);
                 }
 
-                itemsDbContext.Items.Attach(item2edit);
-                itemsDbContext.Entry(item2edit).State = EntityState.Modified;
+                itemsDbContext.Items.Attach(itemData2edit.OneItem);
+                itemsDbContext.Entry(itemData2edit.OneItem).State = EntityState.Modified;
                 itemsDbContext.SaveChanges();
 
-                return RedirectToAction(item2edit.InvokingViewAction == null ? "ShowUserItems" : item2edit.InvokingViewAction);
+                return RedirectToAction(itemData2edit.ViewInfo.InvokingViewAction == null ? "ShowUserItems" : itemData2edit.ViewInfo.InvokingViewAction);
             }
             catch(Exception ex)
             {
@@ -988,15 +1018,27 @@ namespace AspNetIdentityTry1.Controllers
         {
             try
             {
-                Item item2del = itemsDbContext.Items.Where(i => i.Id == item2delete.Id).FirstOrDefault();
+                User currentUser = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
 
-                if (item2delete != null)
+                Setup setup = GetUserSetup(currentUser);
+
+                if (setup.AllowUserChangeItem || User.IsInRole("Administrator"))
                 {
-                    itemsDbContext.Items.Remove(item2del);
-                    itemsDbContext.SaveChanges();
-                }
+                    Item item2del = itemsDbContext.Items.Where(i => i.Id == item2delete.Id).FirstOrDefault();
 
-                return RedirectToAction("ShowUserItems");
+                    if (item2delete != null)
+                    {
+                        itemsDbContext.Items.Remove(item2del);
+                        itemsDbContext.SaveChanges();
+                    }
+
+                    return RedirectToAction("ShowUserItems");
+                }
+                else
+                {
+                    return HttpNotFound();
+                }
+                
             }
             catch (Exception ex)
             {
@@ -1004,6 +1046,23 @@ namespace AspNetIdentityTry1.Controllers
             }
         }
 
+        private Setup GetUserSetup(User currentUser)
+        {
+            // setup powinien być generalnie per uzytkownik (admin, user), ale parametry ustawiane by Admin dla Uzytkownikow, są zaczytywane z setupu Admina
+            Setup setup = itemsDbContext.Setups.Where(s => s.UserName == User.Identity.Name).FirstOrDefault();
+
+            if (setup != null && User.IsInRole("CommonUser"))
+            {
+                setup.AllowUserChangeItem = itemsDbContext.Setups.Where(s => s.UserName == currentUser.ParentName).FirstOrDefault().AllowUserChangeItem;
+            }
+            else if (User.IsInRole("CommonUser"))
+            {
+                setup = new Setup();
+                setup.AllowUserChangeItem = itemsDbContext.Setups.Where(s => s.UserName == currentUser.ParentName).FirstOrDefault().AllowUserChangeItem;
+            }
+
+            return setup;
+        }
 
         /*[HttpGet]
         public string GetSampleData()
