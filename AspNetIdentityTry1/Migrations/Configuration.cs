@@ -5,15 +5,14 @@ namespace AspNetIdentityTry1.Migrations
     using System.Data.Entity.Migrations;
     using System.Linq;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<AspNetIdentityTry1.ItemsDbContext5>
+    internal sealed class Configuration : DbMigrationsConfiguration<AspNetIdentityTry1.AppDbContext>
     {
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
-            ContextKey = "AspNetIdentityTry1.ItemsDbContext5";
         }
 
-        protected override void Seed(AspNetIdentityTry1.ItemsDbContext5 context)
+        protected override void Seed(AspNetIdentityTry1.AppDbContext context)
         {
             //  This method will be called after migrating to the latest version.
 

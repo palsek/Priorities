@@ -961,15 +961,16 @@ namespace AspNetIdentityTry1.Controllers
                     allCurrentUsersNames.Add(User.Identity.Name);
                 }
 
+                User currentUser = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+                Setup setup = GetUserSetup(currentUser);
+
                 if (!ModelState.IsValid)
                 {
                     TempData["Notification"] = "ModelState is NOT valid";
                     ViewBag.allUsersName = allCurrentUsersNames;
 
                     Item item = new Item() { ParentUserName = parentUserName };
-
-                    User currentUser = allUsers.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
-
+                                        
                     ItemsData itemData = new ItemsData()
                     {
                         OneItem = item,
@@ -983,9 +984,12 @@ namespace AspNetIdentityTry1.Controllers
                     return View(itemData);
                 }
 
-                itemsDbContext.Items.Attach(itemData2edit.OneItem);
-                itemsDbContext.Entry(itemData2edit.OneItem).State = EntityState.Modified;
-                itemsDbContext.SaveChanges();
+                if (setup.AllowUserChangeItem || User.IsInRole("Administrator"))
+                {
+                    itemsDbContext.Items.Attach(itemData2edit.OneItem);
+                    itemsDbContext.Entry(itemData2edit.OneItem).State = EntityState.Modified;
+                    itemsDbContext.SaveChanges();
+                }
 
                 return RedirectToAction(itemData2edit.ViewInfo.InvokingViewAction == null ? "ShowUserItems" : itemData2edit.ViewInfo.InvokingViewAction);
             }
@@ -1062,9 +1066,15 @@ namespace AspNetIdentityTry1.Controllers
             else if (User.IsInRole("CommonUser"))
             {
                 setup = new Setup();
-                setup.AllowUserChangeItem = itemsDbContext.Setups.Where(s => s.UserName == currentUser.ParentName).FirstOrDefault().AllowUserChangeItem;
-            }
+                
+                Setup parentSetup = itemsDbContext.Setups.Where(s => s.UserName == currentUser.ParentName).FirstOrDefault();
 
+                if (parentSetup != null)
+                {
+                    setup.AllowUserChangeItem = parentSetup.AllowUserChangeItem;
+                }
+            }           
+                    
             return setup;
         }
 

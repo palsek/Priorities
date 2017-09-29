@@ -19,18 +19,62 @@
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                @*<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
-                </button>
+                </button>*@
                               
                 <table>
                     <tr>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <th>
+                                <div class="dropdown">
+                                    <a href="" class="navbar-brand" data-toggle="dropdown" role="button">Item</a>
+                                    <ul class="dropdown-menu">
+                                        <li>@Html.ActionLink("Show my items", "ShowUserItems", "ItemsPriority")</li>
+                                        <li>@Html.ActionLink("Show my old items", "ShowOldUserItems", "ItemsPriority")</li>
+                                        @if (User.IsInRole("Administrator") || User.IsInRole("SuperUser"))
+                                        {
+                                            <li>@Html.ActionLink("Show all items", "ShowAllItems", "ItemsPriority")</li>
+                                            <li>@Html.ActionLink("Show all old items", "ShowAllOldItems", "ItemsPriority")</li>
+                                        }
+                                    </ul>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="dropdown">
+                                    <a href="" class="navbar-brand" data-toggle="dropdown" role="button">User</a>
+                                    <ul class="dropdown-menu">
+                                        @if (User.IsInRole("Administrator") || User.IsInRole("SuperUser"))
+                                        {
+                                            <li>@Html.ActionLink("Register user", "Register", "Auth")</li>
+                                            <li>@Html.ActionLink("Delete user", "DeleteUser", "Auth")</li>
+                                        }
+                                        <li>@Html.ActionLink("Change data", "EditUserData", "Auth")</li>
+                                        <li>@Html.ActionLink("Change password", "ChangePassword", "Auth")</li>
+                                    </ul>
+                                </div>
+                            </th>
+                            if (User.IsInRole("Administrator") || User.IsInRole("SuperUser"))
+                            {                                                               
+                                <th>@Html.ActionLink("Setup", "EditSetup", "Setup", new { area = "" }, new { @class = "navbar-brand" })</th>
+                            }
+                            <th>@Html.ActionLink("Log out", "LogOut", "Auth", new { area = "" }, new { @class = "navbar-brand" })</th>
+                            <th><div style="font-size: large" class="text-danger">@User.Identity.Name</div></th>
+                        }
+                        else
+                        {
+                            <th>@Html.ActionLink("Log in", "LogIn", "Auth", new { area = "" }, new { @class = "navbar-brand" })</th>
+                        }
+                    </tr>
+                    @* poniższa wersja dziala dobrze i jest tu zakomentowana jako backup *@
+                    @*<tr>
                         @if(User.Identity.IsAuthenticated)
                         {
                             <th>@Html.ActionLink("Show my items", "ShowUserItems", "ItemsPriority", new { area = "" }, new { @class = "navbar-brand" })</th>
-                            <th>@Html.ActionLink("Show my old items", "ShowOldUserItems", "ItemsPriority", new { area = "" }, new { @class = "navbar-brand" })</th>                           
+                            <th>@Html.ActionLink("Show my old items", "ShowOldUserItems", "ItemsPriority", new { area = "" }, new { @class = "navbar-brand" })</th>
                             if (User.IsInRole("Administrator") || User.IsInRole("SuperUser"))
                             {
                                 <th>@Html.ActionLink("Show all items", "ShowAllItems", "ItemsPriority", new { area = "" }, new { @class = "navbar-brand" })</th>
@@ -47,7 +91,7 @@
                         {
                             <th>@Html.ActionLink("Log in", "LogIn", "Auth", new { area = "" }, new { @class = "navbar-brand" })</th>
                         }
-                    </tr>
+                    </tr>*@
                 </table>
             </div>
             <div class="navbar-collapse collapse">

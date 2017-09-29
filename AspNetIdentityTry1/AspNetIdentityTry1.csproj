@@ -132,6 +132,7 @@
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="ToDoListtxt.txt" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -156,17 +157,9 @@
     </Compile>
     <Compile Include="InitialConfig.cs" />
     <Compile Include="ItemsDbContext5.cs" />
-    <Compile Include="Migrations\201706270929282_InitialCreate.cs" />
-    <Compile Include="Migrations\201706270929282_InitialCreate.Designer.cs">
-      <DependentUpon>201706270929282_InitialCreate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201708161217574_parentNames.cs" />
-    <Compile Include="Migrations\201708161217574_parentNames.Designer.cs">
-      <DependentUpon>201708161217574_parentNames.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201709250846267_addSetup.cs" />
-    <Compile Include="Migrations\201709250846267_addSetup.Designer.cs">
-      <DependentUpon>201709250846267_addSetup.cs</DependentUpon>
+    <Compile Include="Migrations\201709281522412_req5.cs" />
+    <Compile Include="Migrations\201709281522412_req5.Designer.cs">
+      <DependentUpon>201709281522412_req5.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ChangePasswordModel.cs" />
@@ -199,6 +192,7 @@
     <Content Include="Views\ItemsPriority\ShowAllOldItems.cshtml" />
     <Content Include="Views\Auth\GetUserInfo.cshtml" />
     <Content Include="Views\Setup\EditSetup.cshtml" />
+    <Content Include="Views\Auth\EditUserData.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -210,14 +204,8 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201706270929282_InitialCreate.resx">
-      <DependentUpon>201706270929282_InitialCreate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201708161217574_parentNames.resx">
-      <DependentUpon>201708161217574_parentNames.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201709250846267_addSetup.resx">
-      <DependentUpon>201709250846267_addSetup.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201709281522412_req5.resx">
+      <DependentUpon>201709281522412_req5.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

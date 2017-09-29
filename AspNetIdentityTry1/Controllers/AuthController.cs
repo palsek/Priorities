@@ -260,8 +260,7 @@ namespace AspNetIdentityTry1.Controllers
                 return "something gone wrong: " + ex.Message;
             }
         }
-
-        
+                
 
         [HttpGet]
         [Authorize(Roles = "Administrator, SuperUser")]
@@ -337,6 +336,31 @@ namespace AspNetIdentityTry1.Controllers
 
                 return RedirectToAction("Index", "Home");
             }
+        }
+
+        [HttpGet]
+        public ViewResult EditUserData()
+        {
+            //User user = dbContext.Users.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+            User user = userManager.Users.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+
+            return View(user);
+        }
+
+        [HttpPost]
+        public ActionResult EditUserData(User user)
+        {
+            if (ModelState.IsValid)
+            {
+                if (user.UserName != null && user.Email != null && user.ParentName != null)
+                {
+                    dbContext.Users.Attach(user);
+                    dbContext.Entry(user).State = System.Data.Entity.EntityState.Modified;
+                    dbContext.SaveChanges();
+                }
+            }
+
+            return RedirectToAction("ShowUserItems", "ItemsPriority");
         }
 
         /*[HttpPost]
