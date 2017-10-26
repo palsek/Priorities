@@ -75,7 +75,9 @@
             <p style="display: inline; font-weight: bolder">Number per page:</p>
             @Html.TextBox("numberPerPage", 20, new { style = "width:50px", @maxlength = "3", @class = "form-control"})
             <p style="display: inline; font-weight: bolder">User:</p>
-            @Html.DropDownList("userName", userList, new { @class = "form-control", style = "max-width:160px" })
+            <p style="display: inline-block">
+                @Html.DropDownList("userName", userList, new { @class = "form-control", style = "max-width:160px" })
+            </p>
             <input type="submit" value="Apply" class="btn btn-default" />
         </form>
     </div>
@@ -84,6 +86,33 @@
 <p>
     <input type="button" value="Create" class="btn btn-default" onclick="location.href='@Url.Action("CreateItemForUser", "ItemsPriority")'" />
 </p>
+
+@* nieudana proba zrobienia na tabelce *@
+@*<table>
+    <tr>
+        <td>
+            <div>
+                <input type="button" value="Create" class="btn btn-default" onclick="location.href='@Url.Action("CreateItemForUser", "ItemsPriority")'" />
+            </div>
+        </td>
+        <td>
+            <div style="float: right">
+                <form action="/ItemsPriority/ShowAllItems" method="get" class="form-inline" style="display: inline-block; float: right">
+                    <p style="display: inline-block; font-weight: bolder">Order by:</p>
+                    @Html.DropDownList("orderBy", orderByList, new { @class = "form-control", style = "width:100px; display: inline-block", })
+                    @Html.DropDownList("orderDirection", orderDirection, new { @class = "form-control", style = "width:130px; display: inline-block" })
+                    <p style="display: inline-block; font-weight: bolder">Number per page:</p>
+                    @Html.TextBox("numberPerPage", 20, new { style = "width:50px; display: inline-block", @maxlength = "3", @class = "form-control" })
+                    <p style="display: inline-block; font-weight: bolder">User:</p>
+                    <p style="display: inline-block">
+                        @Html.DropDownList("userName", userList, new { @class = "form-control", style = "max-width:160px; display: inline-block" })
+                    </p>
+                    <input type="submit" value="Apply" class="btn btn-default" style="display: inline-block" />
+                </form>
+            </div>
+        </td>
+    </tr>
+</table>*@
 
 <table class="table">
     <tr>

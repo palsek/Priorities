@@ -1,2 +1,11 @@
 ﻿1. Scenariusz gdy SuperUser usuwala admina nie dziala, bo usuwa tylko admina i jego itemy, ale nie usuwa jego Userow i ich itemow
 1a. Trzeba dodać obsługę tego w metodzie POST Delete w Auth COntroller
+[dodane i wygląda na to że działa]
+
+2. Sprawdzić czy przy tworzeniu jakiegokolwiek użytkownika jest tworzony jego Setup w bazie danych
+[ nie jest ale dodano obejście jak z bazy zwróci null-a ]
+
+3. Wyrównanie tabelki "Order by" ciągle szwankuje (chyba w przypadku gdy admin nie ma żadnych child userów)
+[dodane i wygląda na to że działa]
+
+4. MOzna by wszędzie gdzie zrobi się jakąś akcję zrobić ten feedback taki jak jest na niektórych itemach (np. użytkownik został zarejestrowany)

@@ -287,16 +287,38 @@ namespace AspNetIdentityTry1.Controllers
                 ViewBag.allUsersName = dbContext.Users.Where(u => u.ParentName == User.Identity.Name).Select(u => u.UserName);
 
                 return View();
-            }            
+            }
 
             var userToDelete = userManager.FindByName(model.UserName);
+                        
+            List<User> usersToDelete = dbContext.Users.Where(u => u.ParentName == userToDelete.UserName).ToList<User>();
+            usersToDelete.Add(userToDelete);
 
-            var result = userManager.Delete(userToDelete);
+            bool deletionSucceeded = false;
 
-            if (result.Succeeded)
+            foreach (User userToDel in usersToDelete)
+            {
+                var delResult = userManager.Delete(userToDel);
+                deletionSucceeded = delResult.Succeeded;
+            }
+            
+            if (deletionSucceeded)
             {
                 ItemsDbContext5 itemDbContext = new ItemsDbContext5();
+
+                // parent items to delete
                 List<Item> items2del = itemDbContext.Items.Where(i => i.UserName == model.UserName).ToList();
+
+                // child items to delete
+                List<Item> childItems2del = new List<Item>();                
+                foreach (User user in usersToDelete)
+                {
+                    List<Item> oneChildItem = itemDbContext.Items.Where(i => i.UserName == user.UserName).ToList();
+                    childItems2del.AddRange(oneChildItem);
+                }
+
+                // merge all items to delete
+                items2del.AddRange(childItems2del);
 
                 if (items2del != null)
                 {

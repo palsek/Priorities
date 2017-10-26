@@ -984,13 +984,30 @@ namespace AspNetIdentityTry1.Controllers
                     return View(itemData);
                 }
 
+                if (setup == null)
+                {
+                    setup = new Setup();
+                }
+                               
                 if (setup.AllowUserChangeItem || User.IsInRole("Administrator"))
                 {
+                    // edytujemy wszystko uzywajac itemData2edit.OneItem
                     itemsDbContext.Items.Attach(itemData2edit.OneItem);
                     itemsDbContext.Entry(itemData2edit.OneItem).State = EntityState.Modified;
                     itemsDbContext.SaveChanges();
                 }
+                else
+                { 
+                    // bierzemy orgItem by Id
+                    // zmieniamy mu pola ktore mozna 
+                    Item orgItem = itemsDbContext.Items.FirstOrDefault(i => i.Id == itemData2edit.OneItem.Id);
+                    orgItem.Status = itemData2edit.OneItem.Status;
 
+                    itemsDbContext.Items.Attach(orgItem);
+                    itemsDbContext.Entry(orgItem).State = EntityState.Modified;
+                    itemsDbContext.SaveChanges();
+                }
+                
                 return RedirectToAction(itemData2edit.ViewInfo.InvokingViewAction == null ? "ShowUserItems" : itemData2edit.ViewInfo.InvokingViewAction);
             }
             catch(Exception ex)
@@ -1057,13 +1074,27 @@ namespace AspNetIdentityTry1.Controllers
         private Setup GetUserSetup(User currentUser)
         {
             // setup powinien być generalnie per uzytkownik (admin, user), ale parametry ustawiane by Admin dla Uzytkownikow, są zaczytywane z setupu Admina
-            Setup setup = itemsDbContext.Setups.Where(s => s.UserName == User.Identity.Name).FirstOrDefault();
+            Setup setup = new Setup();
+            setup = itemsDbContext.Setups.Where(s => s.UserName == User.Identity.Name).FirstOrDefault();
 
-            if (setup != null && User.IsInRole("CommonUser"))
+            // dodaj parametry ustawiane przez Admina
+            if (User.IsInRole("CommonUser"))
             {
-                setup.AllowUserChangeItem = itemsDbContext.Setups.Where(s => s.UserName == currentUser.ParentName).FirstOrDefault().AllowUserChangeItem;
+                if (setup == null)
+                {
+                    setup = new Setup();
+                }
+
+                Setup parentSetup = itemsDbContext.Setups.Where(s => s.UserName == currentUser.ParentName).FirstOrDefault();
+
+                if (parentSetup != null)
+                {
+                    setup.AllowUserChangeItem = parentSetup.AllowUserChangeItem;
+                }
+
+                //setup.AllowUserChangeItem = itemsDbContext.Setups.Where(s => s.UserName == currentUser.ParentName).FirstOrDefault().AllowUserChangeItem;
             }
-            else if (User.IsInRole("CommonUser"))
+            /*else if (User.IsInRole("CommonUser"))
             {
                 setup = new Setup();
                 
@@ -1073,7 +1104,13 @@ namespace AspNetIdentityTry1.Controllers
                 {
                     setup.AllowUserChangeItem = parentSetup.AllowUserChangeItem;
                 }
-            }           
+            } */
+
+            if (User.IsInRole("Administrator") && setup == null)
+            {
+                setup = new Setup();
+                setup.AllowUserChangeItem = true;
+            }
                     
             return setup;
         }
